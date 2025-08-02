@@ -13,9 +13,9 @@ java {
 	}
 }
 
-// Add this block to configure toolchain repositories                                                                                                                            
-repositories {                                                                                                                                                                   
-    mavenCentral()                                                                                                                                                               
+// Add toolchain repository configuration
+repositories {
+	mavenCentral()
 }
 
 configurations {
