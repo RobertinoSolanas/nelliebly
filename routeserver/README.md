@@ -12,3 +12,9 @@
 # gradle bootrun
 # gradle format
 # gradle test
+
+# aider ai
+# export OPENROUTER_API_KEY=""
+# aider --model openrouter/qwen/qwen3-coder
+# /ask
+# go ahead
