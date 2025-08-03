@@ -8,16 +8,12 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @WebFluxTest(HealthController.class)
 class HealthControllerTest {
 
-    @Autowired
-    private WebTestClient webTestClient;
+	@Autowired
+	private WebTestClient webTestClient;
 
-    @Test
-    void heartbeat_shouldReturnOk() {
-        webTestClient
-            .get()
-            .uri("/heartbeat")
-            .exchange()
-            .expectStatus()
-            .isOk();
-    }
+	@Test
+	void heartbeat_shouldReturnOk() {
+		webTestClient.get().uri("/heartbeat").exchange().expectStatus().isOk();
+	}
+
 }
