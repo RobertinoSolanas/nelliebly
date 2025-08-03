@@ -6,6 +6,7 @@ package "routeserver" {
   package "controller" {
     [HealthController] as health
     [PoiController] as poi
+    [CalculateRouteController] as route
   }
   
   package "model" {
@@ -14,6 +15,7 @@ package "routeserver" {
   
   app --> health : uses
   app --> poi : uses
+  app --> route : uses
   poi --> poiModel : uses
 }
 
@@ -30,6 +32,11 @@ end note
 note right of poi
   Handles points of interest requests
   GET /getPoi
+end note
+
+note right of route
+  Calculates routes between locations
+  GET /calculateRoute
 end note
 
 note right of poiModel

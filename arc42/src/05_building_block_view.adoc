@@ -123,6 +123,7 @@ The routeserver consists of the following main building blocks:
 | `model` package | Contains data models and domain objects
 | `HealthController` | Provides health check endpoint for monitoring
 | `PoiController` | Handles points of interest retrieval requests
+| `CalculateRouteController` | Handles route calculation requests between start and end points
 | `Poi` | Data model representing a point of interest
 |===
 
@@ -130,6 +131,7 @@ Important Interfaces::
 The application exposes RESTful HTTP endpoints as its primary interface:
 - GET /heartbeat - Health check endpoint returning HTTP 200
 - GET /getPoi - Points of interest endpoint with parameters for latitude, longitude, limit, and mock mode
+- GET /calculateRoute - Route calculation endpoint with parameters for start and end locations
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -269,6 +271,26 @@ Provides an endpoint for retrieving points of interest near specific GPS coordin
 Open Issues/Problems/Risks::
 The mock implementation currently returns static data regardless of the provided coordinates. A real implementation would need to query a database or external service.
 
+==== CalculateRouteController
+
+Purpose/Responsibility::
+Handles requests for calculating routes between a start and end location.
+
+Interface(s)::
+GET /calculateRoute endpoint with parameters for start and end locations.
+
+Quality/Performance Characteristics::
+Returns route information in JSON format with distance and duration estimates.
+
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/controller/CalculateRouteController.java`
+
+Fulfilled Requirements::
+Provides an endpoint for calculating routes between two locations.
+
+Open Issues/Problems/Risks::
+The current implementation returns mock data. A real implementation would need to integrate with a routing algorithm or external service.
+
 ==== Poi
 
 Purpose/Responsibility::
@@ -344,6 +366,7 @@ The controller package contains all REST controllers organized by functional are
 _Internal Structure_:
 - HealthController.java: Health check endpoints
 - PoiController.java: Points of interest endpoints
+- CalculateRouteController.java: Route calculation endpoints
 
 _Design Principles_:
 - Each controller handles a specific functional area
