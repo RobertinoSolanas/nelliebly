@@ -27,7 +27,8 @@ public class PoiController {
 		if (mock) {
 			// Use static implementation
 			return POIS.stream().limit(limit).toList();
-		} else {
+		}
+		else {
 			// Return HTTP 400 when mock is false
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Non-mock implementation not available");
 		}

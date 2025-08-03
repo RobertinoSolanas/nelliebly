@@ -46,11 +46,7 @@ class PoiControllerTest {
 
 	@Test
 	void getPoi_withMockFalse_shouldReturnBadRequest() {
-		webTestClient.get()
-			.uri("/getPoi?lat=40.7128&lon=-74.0060&mock=false")
-			.exchange()
-			.expectStatus()
-			.isBadRequest();
+		webTestClient.get().uri("/getPoi?lat=40.7128&lon=-74.0060&mock=false").exchange().expectStatus().isBadRequest();
 	}
 
 }
