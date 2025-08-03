@@ -28,4 +28,6 @@
 # export OPENROUTER_API_KEY=""
 # aider --model openrouter/qwen/qwen3-coder
 # /ask
+# /chat-mode code
 # go ahead
+# /ask
