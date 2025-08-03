@@ -49,7 +49,7 @@ ifdef::arc42help[]
 ****
 Here you describe the decomposition of the overall system using the following white box template. It contains
 
- * an overview diagram
+ * an overview diagram 2
  * a motivation for the decomposition
  * black box descriptions of the contained building blocks. For these we offer you alternatives:
 
