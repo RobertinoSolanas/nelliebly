@@ -33,4 +33,24 @@ class PoiControllerTest {
 			.hasSize(2);
 	}
 
+	@Test
+	void getPoi_withMockTrue_shouldReturnListOfPois() {
+		webTestClient.get()
+			.uri("/getPoi?lat=40.7128&lon=-74.0060&mock=true")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBodyList(Object.class)
+			.hasSize(5);
+	}
+
+	@Test
+	void getPoi_withMockFalse_shouldReturnBadRequest() {
+		webTestClient.get()
+			.uri("/getPoi?lat=40.7128&lon=-74.0060&mock=false")
+			.exchange()
+			.expectStatus()
+			.isBadRequest();
+	}
+
 }
