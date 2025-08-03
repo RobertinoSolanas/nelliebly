@@ -67,18 +67,30 @@ In the best case you will get away with examples or simple signatures.
 ****
 endif::arc42help[]
 
-_**<Overview Diagram>**_
+image::05_building_blocks-EN.png["Building Blocks Overview"]
 
 Motivation::
 
-_<text explanation>_
-
+The routeserver application follows a typical Spring Boot reactive web application structure with a clear separation of concerns between controllers, models, and services. This modular approach allows for easy maintenance and extensibility.
 
 Contained Building Blocks::
-_<Description of contained building block (black boxes)>_
+The routeserver consists of the following main building blocks:
+
+[cols="1,2" options="header"]
+|===
+| **Name** | **Responsibility**
+| `RouteserverApplication` | Main application class that bootstraps the Spring Boot application
+| `controller` package | Contains REST controllers that handle HTTP requests and responses
+| `model` package | Contains data models and domain objects
+| `HealthController` | Provides health check endpoint for monitoring
+| `PoiController` | Handles points of interest retrieval requests
+| `Poi` | Data model representing a point of interest
+|===
 
 Important Interfaces::
-_<Description of important interfaces>_
+The application exposes RESTful HTTP endpoints as its primary interface:
+- GET /heartbeat - Health check endpoint returning HTTP 200
+- GET /getPoi - Points of interest endpoint with parameters for latitude, longitude, limit, and mock mode
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -102,7 +114,7 @@ Its headline is the name of the black box.
 ****
 endif::arc42help[]
 
-==== <Name black box 1>
+==== RouteserverApplication
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -120,36 +132,123 @@ according the the following black box template:
 ****
 endif::arc42help[]
 
-_<Purpose/Responsibility>_
+Purpose/Responsibility::
+The main application class that serves as the entry point for the Spring Boot application. It initializes the application context and starts the embedded web server.
 
-_<Interface(s)>_
+Interface(s)::
+Standard Spring Boot main method signature with command-line arguments.
 
-_<(Optional) Quality/Performance Characteristics>_
+Quality/Performance Characteristics::
+Uses Spring Boot's auto-configuration for optimal startup performance and resource utilization.
 
-_<(Optional) Directory/File Location>_
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/RouteserverApplication.java`
 
-_<(Optional) Fulfilled Requirements>_
+Fulfilled Requirements::
+Provides the foundation for a reactive web application using Spring WebFlux.
 
-_<(optional) Open Issues/Problems/Risks>_
+Open Issues/Problems/Risks::
+None at this time.
 
+==== controller package
 
+Purpose/Responsibility::
+Contains all REST controllers responsible for handling incoming HTTP requests and returning appropriate responses. Implements the API endpoints for the routing service.
 
+Interface(s)::
+Exposes RESTful HTTP endpoints for health checks and points of interest retrieval.
 
-==== <Name black box 2>
+Quality/Performance Characteristics::
+Built using Spring WebFlux for non-blocking, reactive programming model that supports high concurrency.
 
-_<black box template>_
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/controller/`
 
-==== <Name black box n>
+Fulfilled Requirements::
+Provides REST API endpoints for external clients to interact with the routing service.
 
-_<black box template>_
+Open Issues/Problems/Risks::
+Controllers are currently stateless and simple, but may need to be enhanced with authentication/authorization in the future.
 
+==== model package
 
-==== <Name interface 1>
+Purpose/Responsibility::
+Contains domain models and data transfer objects used throughout the application.
 
-...
+Interface(s)::
+Provides Java classes that represent data structures used in the application.
 
-==== <Name interface m>
+Quality/Performance Characteristics::
+Uses Lombok annotations to reduce boilerplate code and improve maintainability.
 
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/model/`
+
+Fulfilled Requirements::
+Defines the data structures for points of interest and other domain entities.
+
+Open Issues/Problems/Risks::
+Model classes are simple data containers and may need to be extended with validation logic.
+
+==== HealthController
+
+Purpose/Responsibility::
+Implements a simple health check endpoint that returns HTTP 200 OK to indicate the service is running.
+
+Interface(s)::
+GET /heartbeat endpoint that returns an empty response with HTTP 200 status code.
+
+Quality/Performance Characteristics::
+Minimal overhead health check endpoint for monitoring and load balancing.
+
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/controller/HealthController.java`
+
+Fulfilled Requirements::
+Provides a simple endpoint for infrastructure monitoring tools to verify service availability.
+
+Open Issues/Problems/Risks::
+None at this time.
+
+==== PoiController
+
+Purpose/Responsibility::
+Handles requests for points of interest based on GPS coordinates. Currently implements a static mock implementation.
+
+Interface(s)::
+GET /getPoi endpoint with parameters for latitude, longitude, limit, and mock mode.
+
+Quality/Performance Characteristics::
+Returns points of interest data in JSON format with support for limiting results.
+
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/controller/PoiController.java`
+
+Fulfilled Requirements::
+Provides an endpoint for retrieving points of interest near specific GPS coordinates.
+
+Open Issues/Problems/Risks::
+The mock implementation currently returns static data regardless of the provided coordinates. A real implementation would need to query a database or external service.
+
+==== Poi
+
+Purpose/Responsibility::
+Data model representing a point of interest with attributes such as name, GPS coordinates, and category.
+
+Interface(s)::
+Java class with getter/setter methods for all properties.
+
+Quality/Performance Characteristics::
+Uses Lombok @Data annotation to automatically generate standard methods.
+
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/model/Poi.java`
+
+Fulfilled Requirements::
+Defines the structure for point of interest data used throughout the application.
+
+Open Issues/Problems/Risks::
+None at this time.
 
 
 === Level 2
@@ -165,7 +264,7 @@ Leave out normal, simple, boring or standardized parts of your system
 ****
 endif::arc42help[]
 
-==== White Box _<building block 1>_
+==== White Box _PoiController_
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -174,21 +273,48 @@ ifdef::arc42help[]
 ****
 endif::arc42help[]
 
-_<white box template>_
+The PoiController is responsible for handling requests related to points of interest retrieval.
 
-==== White Box _<building block 2>_
+_Internal Structure_:
+The controller consists of:
+- Static POI data list for mock implementation
+- getPoi() method that handles GET requests to /getPoi
+- Logic to switch between mock and real implementation (currently only mock)
 
+_Internal Dependencies_:
+- Uses the Poi model class for data representation
+- Depends on Spring Web annotations for request mapping
+- Uses ResponseStatusException for error handling
 
-_<white box template>_
+_Detailed Interface_:
+GET /getPoi
+Parameters:
+- lat (double): Latitude coordinate
+- lon (double): Longitude coordinate
+- limit (int, optional): Maximum number of results (default: 5)
+- mock (boolean, optional): Use mock data (default: true)
 
-...
+Returns:
+- HTTP 200 with JSON array of Poi objects when mock=true
+- HTTP 400 when mock=false (not implemented)
 
-==== White Box _<building block m>_
+==== White Box _controller package_
 
+The controller package contains all REST controllers organized by functional area.
 
-_<white box template>_
+_Internal Structure_:
+- HealthController.java: Health check endpoints
+- PoiController.java: Points of interest endpoints
 
+_Design Principles_:
+- Each controller handles a specific functional area
+- Controllers are stateless and follow REST conventions
+- Error handling is consistent across controllers
 
+_Dependencies_:
+- Spring WebFlux annotations for request handling
+- Model classes for data representation
+- Spring's ResponseEntity for HTTP responses
 
 === Level 3
 
@@ -202,24 +328,29 @@ part of arc42 for additional levels.
 ****
 endif::arc42help[]
 
-==== White Box <_building block x.1_>
+==== White Box _getPoi method_
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Specifies the internal structure of _building block x.1_.
-****
-endif::arc42help[]
+The getPoi method in PoiController handles the core logic for points of interest retrieval.
 
-_<white box template>_
+_Method Signature_:
+public List<Poi> getPoi(@RequestParam double lat, @RequestParam double lon,
+        @RequestParam(defaultValue = "5") int limit, @RequestParam(defaultValue = "true") boolean mock)
 
+_Logic Flow_:
+1. Receive HTTP GET request with parameters
+2. Check mock parameter value
+3. If mock=true:
+   - Filter static POI list (currently returns all)
+   - Apply limit to results
+   - Return list of Poi objects
+4. If mock=false:
+   - Throw ResponseStatusException with HTTP 400
 
-==== White Box <_building block x.2_>
+_Error Handling_:
+- Returns HTTP 400 when mock=false (feature not implemented)
+- Parameter validation handled by Spring automatically
 
-_<white box template>_
-
-
-
-==== White Box <_building block y.1_>
-
-_<white box template>_
+_Data Processing_:
+- Currently no actual filtering by proximity (would be implemented in real version)
+- Limit parameter controls maximum results returned
+- Static data set used for demonstration purposes
