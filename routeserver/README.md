@@ -1,4 +1,15 @@
 # nelliebly
+# java spring 3.5
+# gradle
+# openroute qwen3-coder - 10 Euro
+# aider ai
+# github
+# checkstyle spring
+
+# plantuml
+# podman run -d -p 8080:8080 plantuml/plantuml-server:jetty
+# alt + d 
+
 
 # install
 # export JAVA_HOME=/usr/lib/jvm/jdk-24.0.2/

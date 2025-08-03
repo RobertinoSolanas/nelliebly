@@ -1,0 +1,39 @@
+....
+@startuml routeserver
+package "routeserver" {
+  [RouteserverApplication] as app
+  
+  package "controller" {
+    [HealthController] as health
+    [PoiController] as poi
+  }
+  
+  package "model" {
+    [Poi] as poiModel
+  }
+  
+  app --> health : uses
+  app --> poi : uses
+  poi --> poiModel : uses
+}
+
+note right of app
+  Main application class that
+  bootstraps the Spring Boot app
+end note
+
+note right of health
+  Provides health check endpoint
+  GET /heartbeat
+end note
+
+note right of poi
+  Handles points of interest requests
+  GET /getPoi
+end note
+
+note right of poiModel
+  Data model for POI entities
+end note
+@enduml
+....
