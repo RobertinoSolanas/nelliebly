@@ -24,18 +24,16 @@ public class PoiController {
 			new Poi("4", "Statue of Liberty", 40.6892, -74.0445, "Monument"),
 			new Poi("5", "Times Square", 40.7580, -73.9855, "Landmark"));
 
-	@Operation(summary = "Get points of interest", 
-	           description = "Returns list of POIs near specified coordinates")
-	@ApiResponses(value = {
-	    @ApiResponse(responseCode = "200", description = "POIs retrieved successfully"),
-	    @ApiResponse(responseCode = "400", description = "Invalid parameters or non-mock implementation requested")
-	})
+	@Operation(summary = "Get points of interest", description = "Returns list of POIs near specified coordinates")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "POIs retrieved successfully"),
+			@ApiResponse(responseCode = "400",
+					description = "Invalid parameters or non-mock implementation requested") })
 	@GetMapping("/getPoi")
-	public List<Poi> getPoi(
-			@Parameter(description = "Latitude coordinate") @RequestParam double lat,
+	public List<Poi> getPoi(@Parameter(description = "Latitude coordinate") @RequestParam double lat,
 			@Parameter(description = "Longitude coordinate") @RequestParam double lon,
 			@Parameter(description = "Maximum number of results to return") @RequestParam(defaultValue = "5") int limit,
-			@Parameter(description = "Use mock data if true, otherwise return error") @RequestParam(defaultValue = "true") boolean mock) {
+			@Parameter(description = "Use mock data if true, otherwise return error") @RequestParam(
+					defaultValue = "true") boolean mock) {
 
 		if (mock) {
 			// Use static implementation

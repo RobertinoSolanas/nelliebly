@@ -15,12 +15,10 @@ import java.util.Map;
 @RestController
 public class CalculateRouteController {
 
-	@Operation(summary = "Calculate route between two points", 
-	           description = "Returns route information between start and end locations")
-	@ApiResponses(value = {
-	    @ApiResponse(responseCode = "200", description = "Route calculated successfully"),
-	    @ApiResponse(responseCode = "400", description = "Invalid input parameters")
-	})
+	@Operation(summary = "Calculate route between two points",
+			description = "Returns route information between start and end locations")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Route calculated successfully"),
+			@ApiResponse(responseCode = "400", description = "Invalid input parameters") })
 	@GetMapping("/calculateRoute")
 	public ResponseEntity<Map<String, Object>> calculateRoute(
 			@Parameter(description = "Start location identifier") @RequestParam String start,

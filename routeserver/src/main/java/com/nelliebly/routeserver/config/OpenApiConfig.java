@@ -8,12 +8,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
-    @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-            .info(new Info()
-                .title("Route Server API")
-                .version("1.0")
-                .description("API for route calculation and POI services"));
-    }
+	@Bean
+	public OpenAPI customOpenAPI() {
+		return new OpenAPI().info(new Info().title("Route Server API")
+			.version("1.0")
+			.description("API for route calculation and POI services"));
+	}
+
 }

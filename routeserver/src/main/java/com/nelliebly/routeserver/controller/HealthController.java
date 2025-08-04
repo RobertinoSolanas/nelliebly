@@ -10,11 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HealthController {
 
-	@Operation(summary = "Health check endpoint", 
-	           description = "Returns 200 OK if service is healthy")
-	@ApiResponses(value = {
-	    @ApiResponse(responseCode = "200", description = "Service is healthy")
-	})
+	@Operation(summary = "Health check endpoint", description = "Returns 200 OK if service is healthy")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Service is healthy") })
 	@GetMapping("/heartbeat")
 	public ResponseEntity<Void> heartbeat() {
 		return ResponseEntity.ok().build();
