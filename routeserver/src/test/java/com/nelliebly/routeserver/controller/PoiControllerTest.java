@@ -54,12 +54,11 @@ class PoiControllerTest {
 
 	@Test
 	void getPoi_withMockFalse_shouldReturnDatabaseData() {
-		List<Poi> mockPois = Arrays.asList(
-				new Poi("1", "Central Park", 40.7812, -73.9665, "Park"),
+		List<Poi> mockPois = Arrays.asList(new Poi("1", "Central Park", 40.7812, -73.9665, "Park"),
 				new Poi("2", "Empire State Building", 40.7484, -73.9857, "Landmark"));
-		
+
 		when(poiRepository.findAll()).thenReturn(mockPois);
-		
+
 		webTestClient.get()
 			.uri("/getPoi?lat=40.7128&lon=-74.0060&mock=false")
 			.exchange()
