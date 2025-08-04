@@ -43,3 +43,8 @@
 > block_view.adoc  
 
 # /test gradle -p routeserver test 
+
+#  network
+# watch -n 1 "sudo ss -ntup | grep 'pid=22993'"
+# sudo nethogs
+# watch "sudo ss -ntup --process | grep 22993"
