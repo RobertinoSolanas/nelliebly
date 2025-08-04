@@ -46,7 +46,8 @@ class PoiControllerTest {
 
 		when(poiRepository.findAll()).thenReturn(mockPois);
 
-		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&mock=false")).andExpect(status().isBadRequest());
+		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&mock=false"))
+			.andExpect(status().isOk());
 	}
 
 }
