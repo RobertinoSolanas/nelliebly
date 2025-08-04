@@ -76,15 +76,25 @@ package "routeserver" {
   package "controller" {
     [HealthController] as health
     [PoiController] as poi
+    [CalculateRouteController] as route
+    [LastVisitedRouteController] as lastRoutes
   }
   
   package "model" {
     [Poi] as poiModel
   }
   
+  package "repository" {
+    [PoiRepository] as poiRepo
+  }
+  
   app --> health : uses
   app --> poi : uses
+  app --> route : uses
+  app --> lastRoutes : uses
   poi --> poiModel : uses
+  poi --> poiRepo : uses
+  poiRepo --> poiModel : manages
 }
 
 note right of app
@@ -102,15 +112,30 @@ note right of poi
   GET /getPoi
 end note
 
+note right of route
+  Calculates routes between locations
+  GET /calculateRoute
+end note
+
+note right of lastRoutes
+  Retrieves last visited routes for users
+  GET /getLastRoutes
+end note
+
 note right of poiModel
   Data model for POI entities
+end note
+
+note right of poiRepo
+  Repository for POI data access
+  using Spring Data JPA
 end note
 @enduml
 ....
 
 Motivation::
 
-The routeserver application follows a typical Spring Boot reactive web application structure with a clear separation of concerns between controllers, models, and services. This modular approach allows for easy maintenance and extensibility.
+The routeserver application follows a typical Spring Boot MVC application structure with a clear separation of concerns between controllers, models, and repositories. This modular approach allows for easy maintenance and extensibility.
 
 Contained Building Blocks::
 The routeserver consists of the following main building blocks:
@@ -121,10 +146,13 @@ The routeserver consists of the following main building blocks:
 | `RouteserverApplication` | Main application class that bootstraps the Spring Boot application
 | `controller` package | Contains REST controllers that handle HTTP requests and responses
 | `model` package | Contains data models and domain objects
+| `repository` package | Contains data access repositories
 | `HealthController` | Provides health check endpoint for monitoring
 | `PoiController` | Handles points of interest retrieval requests
 | `CalculateRouteController` | Handles route calculation requests between start and end points
+| `LastVisitedRouteController` | Handles requests for retrieving last visited routes for users
 | `Poi` | Data model representing a point of interest
+| `PoiRepository` | Repository interface for POI data access using Spring Data JPA
 |===
 
 Important Interfaces::
@@ -132,6 +160,7 @@ The application exposes RESTful HTTP endpoints as its primary interface:
 - GET /heartbeat - Health check endpoint returning HTTP 200
 - GET /getPoi - Points of interest endpoint with parameters for latitude, longitude, limit, and mock mode
 - GET /calculateRoute - Route calculation endpoint with parameters for start and end locations
+- GET /getLastRoutes - Last visited routes endpoint with parameter for user ID
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -186,7 +215,7 @@ Directory/File Location::
 `src/main/java/com/nelliebly/routeserver/RouteserverApplication.java`
 
 Fulfilled Requirements::
-Provides the foundation for a reactive web application using Spring WebFlux.
+Provides the foundation for a web application using Spring MVC.
 
 Open Issues/Problems/Risks::
 None at this time.
@@ -197,10 +226,10 @@ Purpose/Responsibility::
 Contains all REST controllers responsible for handling incoming HTTP requests and returning appropriate responses. Implements the API endpoints for the routing service.
 
 Interface(s)::
-Exposes RESTful HTTP endpoints for health checks and points of interest retrieval.
+Exposes RESTful HTTP endpoints for health checks, points of interest retrieval, route calculation, and last visited routes.
 
 Quality/Performance Characteristics::
-Built using Spring WebFlux for non-blocking, reactive programming model that supports high concurrency.
+Built using Spring MVC for handling HTTP requests with support for JSON serialization.
 
 Directory/File Location::
 `src/main/java/com/nelliebly/routeserver/controller/`
@@ -231,6 +260,26 @@ Defines the data structures for points of interest and other domain entities.
 Open Issues/Problems/Risks::
 Model classes are simple data containers and may need to be extended with validation logic.
 
+==== repository package
+
+Purpose/Responsibility::
+Contains repository interfaces for data access using Spring Data JPA.
+
+Interface(s)::
+Provides CRUD operations for domain entities through Spring Data JPA interfaces.
+
+Quality/Performance Characteristics::
+Uses Spring Data JPA to provide standardized data access patterns with minimal boilerplate code.
+
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/repository/`
+
+Fulfilled Requirements::
+Provides data access layer for persisting and retrieving domain entities.
+
+Open Issues/Problems/Risks::
+Currently only implements basic CRUD operations; complex queries may need custom implementations.
+
 ==== HealthController
 
 Purpose/Responsibility::
@@ -254,7 +303,7 @@ None at this time.
 ==== PoiController
 
 Purpose/Responsibility::
-Handles requests for points of interest based on GPS coordinates. Currently implements a static mock implementation.
+Handles requests for points of interest based on GPS coordinates. Supports both mock data and database access.
 
 Interface(s)::
 GET /getPoi endpoint with parameters for latitude, longitude, limit, and mock mode.
@@ -269,7 +318,7 @@ Fulfilled Requirements::
 Provides an endpoint for retrieving points of interest near specific GPS coordinates.
 
 Open Issues/Problems/Risks::
-The mock implementation currently returns static data regardless of the provided coordinates. A real implementation would need to query a database or external service.
+The mock implementation currently returns static data regardless of the provided coordinates. A real implementation would need to query based on proximity.
 
 ==== CalculateRouteController
 
@@ -291,6 +340,26 @@ Provides an endpoint for calculating routes between two locations.
 Open Issues/Problems/Risks::
 The current implementation returns mock data. A real implementation would need to integrate with a routing algorithm or external service.
 
+==== LastVisitedRouteController
+
+Purpose/Responsibility::
+Handles requests for retrieving a user's last visited routes.
+
+Interface(s)::
+GET /getLastRoutes endpoint with parameter for user ID.
+
+Quality/Performance Characteristics::
+Returns route history data in JSON format.
+
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/controller/LastVisitedRouteController.java`
+
+Fulfilled Requirements::
+Provides an endpoint for retrieving a user's recently visited routes.
+
+Open Issues/Problems/Risks::
+The current implementation returns mock data. A real implementation would need to integrate with a database to store and retrieve user route history.
+
 ==== Poi
 
 Purpose/Responsibility::
@@ -310,6 +379,26 @@ Defines the structure for point of interest data used throughout the application
 
 Open Issues/Problems/Risks::
 None at this time.
+
+==== PoiRepository
+
+Purpose/Responsibility::
+Repository interface for POI data access using Spring Data JPA.
+
+Interface(s)::
+Extends JpaRepository to provide CRUD operations for Poi entities.
+
+Quality/Performance Characteristics::
+Uses Spring Data JPA to provide standardized data access patterns with minimal boilerplate code.
+
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/repository/PoiRepository.java`
+
+Fulfilled Requirements::
+Provides data access layer for persisting and retrieving POI entities.
+
+Open Issues/Problems/Risks::
+Currently only implements basic CRUD operations; complex queries may need custom implementations.
 
 
 === Level 2
@@ -338,13 +427,15 @@ The PoiController is responsible for handling requests related to points of inte
 
 _Internal Structure_:
 The controller consists of:
-- Static POI data list for mock implementation
+- Static POI data initialization in @PostConstruct method
 - getPoi() method that handles GET requests to /getPoi
-- Logic to switch between mock and real implementation (currently only mock)
+- Logic to switch between mock and database implementation
+- initializeStaticData() method that populates the database with sample data
 
 _Internal Dependencies_:
 - Uses the Poi model class for data representation
-- Depends on Spring Web annotations for request mapping
+- Depends on PoiRepository for database access
+- Uses Spring Web annotations for request mapping
 - Uses ResponseStatusException for error handling
 
 _Detailed Interface_:
@@ -353,11 +444,11 @@ Parameters:
 - lat (double): Latitude coordinate
 - lon (double): Longitude coordinate
 - limit (int, optional): Maximum number of results (default: 5)
-- mock (boolean, optional): Use mock data (default: true)
+- mock (boolean, optional): Use mock data if true, database if false (default: false)
 
 Returns:
-- HTTP 200 with JSON array of Poi objects when mock=true
-- HTTP 400 when mock=false (not implemented)
+- HTTP 200 with JSON array of Poi objects
+- HTTP 400 when parameters are invalid
 
 ==== White Box _controller package_
 
@@ -367,6 +458,7 @@ _Internal Structure_:
 - HealthController.java: Health check endpoints
 - PoiController.java: Points of interest endpoints
 - CalculateRouteController.java: Route calculation endpoints
+- LastVisitedRouteController.java: Last visited routes endpoints
 
 _Design Principles_:
 - Each controller handles a specific functional area
@@ -374,9 +466,26 @@ _Design Principles_:
 - Error handling is consistent across controllers
 
 _Dependencies_:
-- Spring WebFlux annotations for request handling
+- Spring Web annotations for request handling
 - Model classes for data representation
 - Spring's ResponseEntity for HTTP responses
+- Repository classes for data access
+
+==== White Box _repository package_
+
+The repository package contains data access interfaces using Spring Data JPA.
+
+_Internal Structure_:
+- PoiRepository.java: Repository interface for Poi entities
+
+_Design Principles_:
+- Follows Spring Data JPA conventions
+- Extends JpaRepository for standard CRUD operations
+- Uses method naming conventions for query derivation
+
+_Dependencies_:
+- Spring Data JPA
+- Model classes for entity mapping
 
 === Level 3
 
@@ -396,23 +505,23 @@ The getPoi method in PoiController handles the core logic for points of interest
 
 _Method Signature_:
 public List<Poi> getPoi(@RequestParam double lat, @RequestParam double lon,
-        @RequestParam(defaultValue = "5") int limit, @RequestParam(defaultValue = "true") boolean mock)
+        @RequestParam(defaultValue = "5") int limit, @RequestParam(defaultValue = "false") boolean mock)
 
 _Logic Flow_:
 1. Receive HTTP GET request with parameters
 2. Check mock parameter value
 3. If mock=true:
-   - Filter static POI list (currently returns all)
+   - Return static POI list with limit applied
+4. If mock=false:
+   - Retrieve POIs from database through PoiRepository
    - Apply limit to results
    - Return list of Poi objects
-4. If mock=false:
-   - Throw ResponseStatusException with HTTP 400
 
 _Error Handling_:
-- Returns HTTP 400 when mock=false (feature not implemented)
 - Parameter validation handled by Spring automatically
+- Database errors would propagate as HTTP 500 (not currently handled explicitly)
 
 _Data Processing_:
 - Currently no actual filtering by proximity (would be implemented in real version)
 - Limit parameter controls maximum results returned
-- Static data set used for demonstration purposes
+- Supports both static data and database access modes
