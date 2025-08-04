@@ -2,46 +2,45 @@ package com.nelliebly.routeserver.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.web.servlet.MockMvc;
 
-@WebFluxTest(CalculateRouteController.class)
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(CalculateRouteController.class)
 class CalculateRouteControllerTest {
 
 	@Autowired
-	private WebTestClient webTestClient;
+	private MockMvc mockMvc;
 
 	@Test
-	void calculateRoute_shouldReturnRouteInformation() {
-		webTestClient.get()
-			.uri("/calculateRoute?start=New York&end=Boston")
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectBody()
-			.jsonPath("$.start")
-			.isEqualTo("New York")
-			.jsonPath("$.end")
-			.isEqualTo("Boston")
-			.jsonPath("$.distance")
-			.isEqualTo("5.2 km")
-			.jsonPath("$.duration")
-			.isEqualTo("15 minutes");
+	void calculateRoute_shouldReturnRouteInformation() throws Exception {
+		mockMvc.perform(get("/calculateRoute?start=New York&end=Boston"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.start").value("New York"))
+			.andExpect(jsonPath("$.end").value("Boston"))
+			.andExpect(jsonPath("$.distance").value("5.2 km"))
+			.andExpect(jsonPath("$.duration").value("15 minutes"));
 	}
 
 	@Test
-	void calculateRoute_withoutParameters_shouldReturnBadRequest() {
-		webTestClient.get().uri("/calculateRoute").exchange().expectStatus().is4xxClientError();
+	void calculateRoute_withoutParameters_shouldReturnBadRequest() throws Exception {
+		mockMvc.perform(get("/calculateRoute"))
+			.andExpect(status().is4xxClientError());
 	}
 
 	@Test
-	void calculateRoute_withStartOnly_shouldReturnBadRequest() {
-		webTestClient.get().uri("/calculateRoute?start=New York").exchange().expectStatus().is4xxClientError();
+	void calculateRoute_withStartOnly_shouldReturnBadRequest() throws Exception {
+		mockMvc.perform(get("/calculateRoute?start=New York"))
+			.andExpect(status().is4xxClientError());
 	}
 
 	@Test
-	void calculateRoute_withEndOnly_shouldReturnBadRequest() {
-		webTestClient.get().uri("/calculateRoute?end=Boston").exchange().expectStatus().is4xxClientError();
+	void calculateRoute_withEndOnly_shouldReturnBadRequest() throws Exception {
+		mockMvc.perform(get("/calculateRoute?end=Boston"))
+			.andExpect(status().is4xxClientError());
 	}
 
 }
