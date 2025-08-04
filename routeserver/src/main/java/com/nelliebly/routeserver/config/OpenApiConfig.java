@@ -17,7 +17,7 @@ public class OpenApiConfig {
 			.info(new Info().title("Route Server API")
 				.version("1.0")
 				.description("API for route calculation and POI services"))
-			.servers(List.of(new Server().url("http://localhost:8080").description("Local server")));
+			.servers(List.of(new Server().url("http://localhost:8090").description("Local server")));
 	}
 
 }
