@@ -1,5 +1,9 @@
 package com.nelliebly.routeserver.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,8 +15,16 @@ import java.util.Map;
 @RestController
 public class CalculateRouteController {
 
+	@Operation(summary = "Calculate route between two points", 
+	           description = "Returns route information between start and end locations")
+	@ApiResponses(value = {
+	    @ApiResponse(responseCode = "200", description = "Route calculated successfully"),
+	    @ApiResponse(responseCode = "400", description = "Invalid input parameters")
+	})
 	@GetMapping("/calculateRoute")
-	public ResponseEntity<Map<String, Object>> calculateRoute(@RequestParam String start, @RequestParam String end) {
+	public ResponseEntity<Map<String, Object>> calculateRoute(
+			@Parameter(description = "Start location identifier") @RequestParam String start,
+			@Parameter(description = "End location identifier") @RequestParam String end) {
 
 		// Mock implementation - in a real application this would calculate an actual
 		// route
