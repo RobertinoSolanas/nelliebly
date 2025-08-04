@@ -41,3 +41,5 @@
 # programming
 #  /ask a new controller "LastVisitedRouteController" with an rest  endpoint "getLastRoutes" for a given userid. create tests, update  00_buildingblocks.puml 05_building_
 > block_view.adoc  
+
+# /test gradle -p routeserver test 
