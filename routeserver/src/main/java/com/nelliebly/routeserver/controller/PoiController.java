@@ -3,7 +3,7 @@ package com.nelliebly.routeserver.controller;
 import com.nelliebly.routeserver.model.Poi;
 import com.nelliebly.routeserver.repository.PoiRepository;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
