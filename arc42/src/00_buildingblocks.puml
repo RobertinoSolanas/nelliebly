@@ -7,6 +7,7 @@ package "routeserver" {
     [HealthController] as health
     [PoiController] as poi
     [CalculateRouteController] as route
+    [LastVisitedRouteController] as lastRoutes
   }
   
   package "model" {
@@ -16,6 +17,7 @@ package "routeserver" {
   app --> health : uses
   app --> poi : uses
   app --> route : uses
+  app --> lastRoutes : uses
   poi --> poiModel : uses
 }
 
@@ -37,6 +39,11 @@ end note
 note right of route
   Calculates routes between locations
   GET /calculateRoute
+end note
+
+note right of lastRoutes
+  Retrieves last visited routes for users
+  GET /getLastRoutes
 end note
 
 note right of poiModel
