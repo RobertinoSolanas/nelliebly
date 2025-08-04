@@ -18,35 +18,35 @@ import java.util.Map;
 @RestController
 public class LastVisitedRouteController {
 
-    @Operation(summary = "Get last visited routes", description = "Returns list of last visited routes for a given user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Routes retrieved successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid user ID")
-    })
-    @GetMapping("/getLastRoutes")
-    public List<Map<String, Object>> getLastRoutes(
-            @Parameter(description = "User identifier") @RequestParam String userid) {
+	@Operation(summary = "Get last visited routes",
+			description = "Returns list of last visited routes for a given user")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Routes retrieved successfully"),
+			@ApiResponse(responseCode = "400", description = "Invalid user ID") })
+	@GetMapping("/getLastRoutes")
+	public List<Map<String, Object>> getLastRoutes(
+			@Parameter(description = "User identifier") @RequestParam String userid) {
 
-        // Mock implementation - in a real application this would retrieve from a database
-        if (userid == null || userid.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User ID cannot be null or empty");
-        }
+		// Mock implementation - in a real application this would retrieve from a database
+		if (userid == null || userid.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User ID cannot be null or empty");
+		}
 
-        // Return mock data for demonstration
-        Map<String, Object> route1 = new HashMap<>();
-        route1.put("id", "route1");
-        route1.put("start", "Times Square");
-        route1.put("end", "Central Park");
-        route1.put("date", "2023-10-15T14:30:00Z");
-        route1.put("distance", "3.2 km");
+		// Return mock data for demonstration
+		Map<String, Object> route1 = new HashMap<>();
+		route1.put("id", "route1");
+		route1.put("start", "Times Square");
+		route1.put("end", "Central Park");
+		route1.put("date", "2023-10-15T14:30:00Z");
+		route1.put("distance", "3.2 km");
 
-        Map<String, Object> route2 = new HashMap<>();
-        route2.put("id", "route2");
-        route2.put("start", "Empire State Building");
-        route2.put("end", "Brooklyn Bridge");
-        route2.put("date", "2023-10-10T10:15:00Z");
-        route2.put("distance", "5.7 km");
+		Map<String, Object> route2 = new HashMap<>();
+		route2.put("id", "route2");
+		route2.put("start", "Empire State Building");
+		route2.put("end", "Brooklyn Bridge");
+		route2.put("date", "2023-10-10T10:15:00Z");
+		route2.put("distance", "5.7 km");
 
-        return Arrays.asList(route1, route2);
-    }
+		return Arrays.asList(route1, route2);
+	}
+
 }
