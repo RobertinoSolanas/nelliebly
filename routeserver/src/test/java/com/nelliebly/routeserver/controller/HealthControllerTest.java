@@ -16,8 +16,7 @@ class HealthControllerTest {
 
 	@Test
 	void heartbeat_shouldReturnOk() throws Exception {
-		mockMvc.perform(get("/heartbeat"))
-			.andExpect(status().isOk());
+		mockMvc.perform(get("/heartbeat")).andExpect(status().isOk());
 	}
 
 }

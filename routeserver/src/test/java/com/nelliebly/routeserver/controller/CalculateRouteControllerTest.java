@@ -27,20 +27,17 @@ class CalculateRouteControllerTest {
 
 	@Test
 	void calculateRoute_withoutParameters_shouldReturnBadRequest() throws Exception {
-		mockMvc.perform(get("/calculateRoute"))
-			.andExpect(status().is4xxClientError());
+		mockMvc.perform(get("/calculateRoute")).andExpect(status().is4xxClientError());
 	}
 
 	@Test
 	void calculateRoute_withStartOnly_shouldReturnBadRequest() throws Exception {
-		mockMvc.perform(get("/calculateRoute?start=New York"))
-			.andExpect(status().is4xxClientError());
+		mockMvc.perform(get("/calculateRoute?start=New York")).andExpect(status().is4xxClientError());
 	}
 
 	@Test
 	void calculateRoute_withEndOnly_shouldReturnBadRequest() throws Exception {
-		mockMvc.perform(get("/calculateRoute?end=Boston"))
-			.andExpect(status().is4xxClientError());
+		mockMvc.perform(get("/calculateRoute?end=Boston")).andExpect(status().is4xxClientError());
 	}
 
 }

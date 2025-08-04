@@ -26,20 +26,17 @@ class PoiControllerTest {
 
 	@Test
 	void getPoi_shouldReturnListOfPois() throws Exception {
-		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060"))
-			.andExpect(status().isOk());
+		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060")).andExpect(status().isOk());
 	}
 
 	@Test
 	void getPoi_withLimit_shouldReturnLimitedResults() throws Exception {
-		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&limit=2"))
-			.andExpect(status().isOk());
+		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&limit=2")).andExpect(status().isOk());
 	}
 
 	@Test
 	void getPoi_withMockTrue_shouldReturnStaticData() throws Exception {
-		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&mock=true"))
-			.andExpect(status().isOk());
+		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&mock=true")).andExpect(status().isOk());
 	}
 
 	@Test
@@ -49,8 +46,7 @@ class PoiControllerTest {
 
 		when(poiRepository.findAll()).thenReturn(mockPois);
 
-		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&mock=false"))
-			.andExpect(status().isOk());
+		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&mock=false")).andExpect(status().isOk());
 	}
 
 }
