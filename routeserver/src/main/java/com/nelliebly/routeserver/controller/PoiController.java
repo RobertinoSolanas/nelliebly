@@ -35,8 +35,7 @@ public class PoiController {
 	}
 
 	private void initializeStaticData() {
-		List<Poi> staticPois = Arrays.asList(
-				new Poi("1", "Central Park", 40.7812, -73.9665, "Park"),
+		List<Poi> staticPois = Arrays.asList(new Poi("1", "Central Park", 40.7812, -73.9665, "Park"),
 				new Poi("2", "Empire State Building", 40.7484, -73.9857, "Landmark"),
 				new Poi("3", "Brooklyn Bridge", 40.7061, -73.9969, "Bridge"),
 				new Poi("4", "Statue of Liberty", 40.6892, -74.0445, "Monument"),
@@ -44,23 +43,19 @@ public class PoiController {
 		poiRepository.saveAll(staticPois);
 	}
 
-	@Operation(summary = "Get points of interest", 
-	           description = "Returns list of POIs near specified coordinates")
-	@ApiResponses(value = {
-	    @ApiResponse(responseCode = "200", description = "POIs retrieved successfully"),
-	    @ApiResponse(responseCode = "400", description = "Invalid parameters")
-	})
+	@Operation(summary = "Get points of interest", description = "Returns list of POIs near specified coordinates")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "POIs retrieved successfully"),
+			@ApiResponse(responseCode = "400", description = "Invalid parameters") })
 	@GetMapping("/getPoi")
-	public List<Poi> getPoi(
-			@Parameter(description = "Latitude coordinate") @RequestParam double lat,
+	public List<Poi> getPoi(@Parameter(description = "Latitude coordinate") @RequestParam double lat,
 			@Parameter(description = "Longitude coordinate") @RequestParam double lon,
 			@Parameter(description = "Maximum number of results to return") @RequestParam(defaultValue = "5") int limit,
-			@Parameter(description = "Use database if false, otherwise use static data") @RequestParam(defaultValue = "false") boolean mock) {
+			@Parameter(description = "Use database if false, otherwise use static data") @RequestParam(
+					defaultValue = "false") boolean mock) {
 
 		if (mock) {
 			// Use static implementation
-			List<Poi> staticPois = Arrays.asList(
-					new Poi("1", "Central Park", 40.7812, -73.9665, "Park"),
+			List<Poi> staticPois = Arrays.asList(new Poi("1", "Central Park", 40.7812, -73.9665, "Park"),
 					new Poi("2", "Empire State Building", 40.7484, -73.9857, "Landmark"),
 					new Poi("3", "Brooklyn Bridge", 40.7061, -73.9969, "Bridge"),
 					new Poi("4", "Statue of Liberty", 40.6892, -74.0445, "Monument"),
