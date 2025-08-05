@@ -28,9 +28,14 @@ public class LastVisitedRouteController {
 			@Parameter(description = "User identifier") @RequestParam(required = false) String userid) {
 
 		// Mock implementation - in a real application this would retrieve from a database
-		if (userid == null || userid.isEmpty()) {
+		if (userid == null) {
 			// Return empty list when no user ID is provided
 			return ResponseEntity.ok(Arrays.asList());
+		}
+		
+		if (userid.isEmpty()) {
+			// Return bad request when user ID is empty
+			return ResponseEntity.badRequest().build();
 		}
 
 		// Return mock data for demonstration
