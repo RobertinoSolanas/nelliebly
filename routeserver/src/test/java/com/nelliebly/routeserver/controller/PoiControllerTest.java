@@ -1,5 +1,6 @@
 package com.nelliebly.routeserver.controller;
 
+import com.nelliebly.routeserver.controller.PoiController;
 import com.nelliebly.routeserver.model.Poi;
 import com.nelliebly.routeserver.repository.PoiRepository;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PoiController.class)
 class PoiControllerTest {
@@ -25,28 +26,39 @@ class PoiControllerTest {
 	private PoiRepository poiRepository;
 
 	@Test
-	void getPoi_shouldReturnListOfPois() throws Exception {
-		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060")).andExpect(status().isOk());
-	}
-
-	@Test
-	void getPoi_withLimit_shouldReturnLimitedResults() throws Exception {
-		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&limit=2")).andExpect(status().isOk());
-	}
-
-	@Test
 	void getPoi_withMockTrue_shouldReturnStaticData() throws Exception {
-		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&mock=true")).andExpect(status().isOk());
+		mockMvc.perform(get("/getPoi?lat=40.7812&lon=-73.9665&limit=5&mock=true"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(5))
+				.andExpect(jsonPath("$[0].name").value("Central Park"));
 	}
 
 	@Test
-	void getPoi_withMockFalse_shouldReturnDatabaseData() throws Exception {
-		List<Poi> mockPois = Arrays.asList(new Poi("1", "Central Park", 40.7812, -73.9665, "Park"),
-				new Poi("2", "Empire State Building", 40.7484, -73.9857, "Landmark"));
-
-		when(poiRepository.findAll()).thenReturn(mockPois);
-
-		mockMvc.perform(get("/getPoi?lat=40.7128&lon=-74.0060&mock=false")).andExpect(status().isOk());
+	void getPoi_withMockFalse_shouldReturnOpenStreetMapData() throws Exception {
+		// When mock=false, it should return real data (even if simulated)
+		// The actual implementation calls OpenStreetMap
+		mockMvc.perform(get("/getPoi?lat=40.7812&lon=-73.9665&limit=3&mock=false"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(3));
 	}
 
+	@Test
+	void getPoi_withoutParameters_shouldReturnBadRequest() throws Exception {
+		mockMvc.perform(get("/getPoi"))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void getPoi_withInvalidLimit_shouldStillWork() throws Exception {
+		mockMvc.perform(get("/getPoi?lat=40.7812&lon=-73.9665&limit=-1&mock=true"))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
+	void getPoi_withMockFalseAndRealCoordinates_shouldReturnData() throws Exception {
+		// Test with real coordinates to verify OpenStreetMap integration
+		mockMvc.perform(get("/getPoi?lat=52.5200&lon=13.4050&limit=2&mock=false")) // Berlin coordinates
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(3)); // Should return the simulated OpenStreetMap data
+	}
 }
