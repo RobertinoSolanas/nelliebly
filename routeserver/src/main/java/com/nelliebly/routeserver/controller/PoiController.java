@@ -70,7 +70,7 @@ public class PoiController {
 				pois.add(new Poi("1", "Nearby Cafe", lat + 0.001, lon + 0.001, "Cafe"));
 				pois.add(new Poi("2", "City Park", lat - 0.002, lon + 0.002, "Park"));
 				pois.add(new Poi("3", "Museum", lat + 0.0015, lon - 0.0015, "Museum"));
-				
+
 				return pois;
 			}
 			catch (Exception e) {
