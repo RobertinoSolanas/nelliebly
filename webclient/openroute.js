@@ -222,20 +222,34 @@ function displayPOIs(poiData) {
     
     if (Array.isArray(poiData) && poiData.length > 0) {
         poiData.forEach((poi, index) => {
-            // Add marker to map
-            const marker = L.marker([poi.lat, poi.lon]).addTo(map)
-                .bindPopup(`<b>${poi.name}</b><br>Type: ${poi.type}`);
-            
-            poiMarkers.push(marker);
-            
-            // Add to sidebar info
-            poiInfo += `
-                <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #3498db;">
-                    <h4>${poi.name}</h4>
-                    <p>Type: ${poi.type}</p>
-                    <p>Coordinates: ${poi.lat}, ${poi.lon}</p>
-                </div>
-            `;
+            // Validate coordinates before creating marker
+            if (poi.lat !== undefined && poi.lon !== undefined && 
+                !isNaN(parseFloat(poi.lat)) && !isNaN(parseFloat(poi.lon))) {
+                // Add marker to map
+                const marker = L.marker([parseFloat(poi.lat), parseFloat(poi.lon)]).addTo(map)
+                    .bindPopup(`<b>${poi.name}</b><br>Type: ${poi.type}`);
+                
+                poiMarkers.push(marker);
+                
+                // Add to sidebar info
+                poiInfo += `
+                    <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #3498db;">
+                        <h4>${poi.name}</h4>
+                        <p>Type: ${poi.type}</p>
+                        <p>Coordinates: ${poi.lat}, ${poi.lon}</p>
+                    </div>
+                `;
+            } else {
+                console.warn('Skipping POI with invalid coordinates:', poi);
+                // Still show in sidebar but indicate missing coordinates
+                poiInfo += `
+                    <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #e74c3c;">
+                        <h4>${poi.name}</h4>
+                        <p>Type: ${poi.type}</p>
+                        <p style="color: #e74c3c;">Invalid coordinates</p>
+                    </div>
+                `;
+            }
         });
     } else {
         poiInfo += `<p>No POIs found</p>`;
@@ -258,14 +272,28 @@ function displayNearbyPOIs(poiData) {
     
     if (Array.isArray(poiData) && poiData.length > 0) {
         poiData.forEach((poi, index) => {
-            // Add to sidebar info
-            poiInfo += `
-                <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #3498db;">
-                    <h4>${poi.name}</h4>
-                    <p>Type: ${poi.type}</p>
-                    <p>Coordinates: ${poi.lat}, ${poi.lon}</p>
-                </div>
-            `;
+            // Validate coordinates before creating marker
+            if (poi.lat !== undefined && poi.lon !== undefined && 
+                !isNaN(parseFloat(poi.lat)) && !isNaN(parseFloat(poi.lon))) {
+                // Add to sidebar info
+                poiInfo += `
+                    <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #3498db;">
+                        <h4>${poi.name}</h4>
+                        <p>Type: ${poi.type}</p>
+                        <p>Coordinates: ${poi.lat}, ${poi.lon}</p>
+                    </div>
+                `;
+            } else {
+                console.warn('Skipping nearby POI with invalid coordinates:', poi);
+                // Still show in sidebar but indicate missing coordinates
+                poiInfo += `
+                    <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #e74c3c;">
+                        <h4>${poi.name}</h4>
+                        <p>Type: ${poi.type}</p>
+                        <p style="color: #e74c3c;">Invalid coordinates</p>
+                    </div>
+                `;
+            }
         });
     } else {
         poiInfo += `<p>No nearby POIs found</p>`;
