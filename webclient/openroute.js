@@ -30,6 +30,8 @@ const stopContinueButtons = document.getElementById('stopContinueButtons');
 const goButton = document.getElementById('goButton');
 const stopButton = document.getElementById('stopButton');
 const continueButton = document.getElementById('continueButton');
+const nearbyPoiButton = document.getElementById('nearbyPoiButton');
+const nearbyPoiResults = document.getElementById('nearbyPoiResults');
 
 // Event Listeners
 routeForm.addEventListener('submit', calculateRoute);
@@ -37,6 +39,7 @@ poiForm.addEventListener('submit', searchPOIs);
 goButton.addEventListener('click', startAnimation);
 stopButton.addEventListener('click', stopAnimation);
 continueButton.addEventListener('click', continueAnimation);
+nearbyPoiButton.addEventListener('click', showNearbyPOIs);
 
 // Calculate Route Function
 function calculateRoute(e) {
@@ -91,6 +94,28 @@ function searchPOIs(e) {
         .catch(error => {
             console.error('Error:', error);
             showResult('Error searching POIs: ' + error.message, 'error');
+        });
+}
+
+// Show Nearby POIs Function
+function showNearbyPOIs() {
+    // Get the current map center as the reference point
+    const center = map.getCenter();
+    const lat = center.lat;
+    const lon = center.lng;
+    
+    // Show loading
+    showNearbyPoiResult('Searching for nearby POIs...', 'info');
+    
+    // Call the routeserver API for 3 nearby POIs
+    fetch(`http://localhost:8090/getPoi?lat=${lat}&lon=${lon}&limit=3&mock=false`)
+        .then(response => response.json())
+        .then(data => {
+            displayNearbyPOIs(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNearbyPoiResult('Error searching nearby POIs: ' + error.message, 'error');
         });
 }
 
@@ -225,6 +250,30 @@ function displayPOIs(poiData) {
     }
 }
 
+// Display Nearby POIs
+function displayNearbyPOIs(poiData) {
+    // Display nearby POI info
+    let poiInfo = `<div class="nearby-poi-info"><h3>Next 3 Nearby POIs</h3>`;
+    
+    if (Array.isArray(poiData) && poiData.length > 0) {
+        poiData.forEach((poi, index) => {
+            // Add to sidebar info
+            poiInfo += `
+                <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #3498db;">
+                    <h4>${poi.name}</h4>
+                    <p>Type: ${poi.type}</p>
+                    <p>Coordinates: ${poi.lat}, ${poi.lon}</p>
+                </div>
+            `;
+        });
+    } else {
+        poiInfo += `<p>No nearby POIs found</p>`;
+    }
+    
+    poiInfo += `</div>`;
+    showNearbyPoiResult(poiInfo, 'success');
+}
+
 // Start Animation
 function startAnimation() {
     if (!routeCoordinates || routeCoordinates.length === 0) {
@@ -339,6 +388,23 @@ function showResult(content, type) {
     } else {
         resultsDiv.style.borderLeft = '4px solid #3498db';
         resultsDiv.style.backgroundColor = '#f2f8fb';
+    }
+}
+
+function showNearbyPoiResult(content, type) {
+    nearbyPoiResults.innerHTML = content;
+    
+    // Add styling based on type
+    nearbyPoiResults.className = '';
+    if (type === 'error') {
+        nearbyPoiResults.style.borderLeft = '4px solid #e74c3c';
+        nearbyPoiResults.style.backgroundColor = '#fdf2f2';
+    } else if (type === 'success') {
+        nearbyPoiResults.style.borderLeft = '4px solid #27ae60';
+        nearbyPoiResults.style.backgroundColor = '#f2f9f2';
+    } else {
+        nearbyPoiResults.style.borderLeft = '4px solid #3498db';
+        nearbyPoiResults.style.backgroundColor = '#f2f8fb';
     }
 }
 

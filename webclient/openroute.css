@@ -159,7 +159,7 @@ header h1 {
     margin-bottom: 1rem;
 }
 
-#results {
+#results, #nearbyPoiResults {
     background: #f8f9fa;
     border-radius: 4px;
     padding: 1rem;
@@ -167,7 +167,7 @@ header h1 {
     overflow-y: auto;
 }
 
-.route-info, .poi-info {
+.route-info, .poi-info, .nearby-poi-info {
     margin-bottom: 1rem;
     padding: 0.8rem;
     background: white;
@@ -175,12 +175,12 @@ header h1 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.route-info h3, .poi-info h3 {
+.route-info h3, .poi-info h3, .nearby-poi-info h3 {
     color: #3498db;
     margin-bottom: 0.5rem;
 }
 
-.route-info p, .poi-info p {
+.route-info p, .poi-info p, .nearby-poi-info p {
     margin: 0.3rem 0;
 }
 
