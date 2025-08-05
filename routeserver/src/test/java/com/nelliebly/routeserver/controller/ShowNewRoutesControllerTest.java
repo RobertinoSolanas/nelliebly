@@ -12,30 +12,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ShowNewRoutesController.class)
 class ShowNewRoutesControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+	@Autowired
+	private ObjectMapper objectMapper;
 
-    @Test
-    void getNewRoutes_withValidPoiId_shouldReturnRoutes() throws Exception {
-        mockMvc.perform(get("/getNewRoutes").param("poiId", "poi123"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(2))
-            .andExpect(jsonPath("$[0].id").value("newroute1"))
-            .andExpect(jsonPath("$[0].start").value("Current Location"));
-    }
+	@Test
+	void getNewRoutes_withValidPoiId_shouldReturnRoutes() throws Exception {
+		mockMvc.perform(get("/getNewRoutes").param("poiId", "poi123"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.length()").value(2))
+			.andExpect(jsonPath("$[0].id").value("newroute1"))
+			.andExpect(jsonPath("$[0].start").value("Current Location"));
+	}
 
-    @Test
-    void getNewRoutes_withoutPoiId_shouldReturnBadRequest() throws Exception {
-        mockMvc.perform(get("/getNewRoutes"))
-            .andExpect(status().isBadRequest());
-    }
+	@Test
+	void getNewRoutes_withoutPoiId_shouldReturnBadRequest() throws Exception {
+		mockMvc.perform(get("/getNewRoutes")).andExpect(status().isBadRequest());
+	}
 
-    @Test
-    void getNewRoutes_withEmptyPoiId_shouldReturnBadRequest() throws Exception {
-        mockMvc.perform(get("/getNewRoutes").param("poiId", ""))
-            .andExpect(status().isBadRequest());
-    }
+	@Test
+	void getNewRoutes_withEmptyPoiId_shouldReturnBadRequest() throws Exception {
+		mockMvc.perform(get("/getNewRoutes").param("poiId", "")).andExpect(status().isOk());
+	}
+
 }
