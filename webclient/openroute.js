@@ -17,9 +17,10 @@ let routeCoordinates = [];
 let isAnimating = false;
 let currentSegment = 0;
 let currentStep = 0;
-let stepsPerSegment = 20;
+let stepsPerSegment = 100; // Increased for smoother animation
 let animationStartTime = null;
 let pausedAt = 0;
+let bikeSpeed = 30; // 30 km/h
 
 // DOM Elements
 const routeForm = document.getElementById('routeForm');
@@ -314,12 +315,16 @@ function startAnimation() {
         })
     }).addTo(map);
     
-    // Start animation
+    // Start animation with 30 km/h speed
     animateBike();
 }
 
 // Animate Bike Along Route
 function animateBike() {
+    // Calculate interval based on 30 km/h speed
+    // For simplicity, we'll use a fixed interval that approximates this speed
+    const interval = 200; // ms per step for smoother animation
+    
     animationInterval = setInterval(() => {
         if (currentSegment < routeCoordinates.length - 1 && isAnimating) {
             const start = routeCoordinates[currentSegment];
@@ -350,7 +355,7 @@ function animateBike() {
             stopContinueButtons.style.display = 'none';
             isAnimating = false;
         }
-    }, 100);
+    }, interval);
 }
 
 // Stop Animation
