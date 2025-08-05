@@ -11,15 +11,21 @@ let startMarker = null;
 let endMarker = null;
 let poiMarkers = [];
 let routeLine = null;
+let bikeMarker = null;
+let animationInterval = null;
+let routeCoordinates = [];
 
 // DOM Elements
 const routeForm = document.getElementById('routeForm');
 const poiForm = document.getElementById('poiForm');
 const resultsDiv = document.getElementById('results');
+const animationControls = document.getElementById('animationControls');
+const goButton = document.getElementById('goButton');
 
 // Event Listeners
 routeForm.addEventListener('submit', calculateRoute);
 poiForm.addEventListener('submit', searchPOIs);
+goButton.addEventListener('click', animateBike);
 
 // Calculate Route Function
 function calculateRoute(e) {
@@ -118,18 +124,22 @@ function displayRoute(routeData) {
             endMarker = L.marker(endCoords).addTo(map)
                 .bindPopup(`<b>End: ${routeData.end}</b>`);
             
-            // Draw route line (mock for demo)
-            const routePoints = [
+            // Create route coordinates for animation
+            routeCoordinates = [
                 startCoords,
-                [parseFloat(startCoordsData[0].lat) + (parseFloat(endCoordsData[0].lat) - parseFloat(startCoordsData[0].lat)) / 2, 
-                 parseFloat(startCoordsData[0].lon) + (parseFloat(endCoordsData[0].lon) - parseFloat(startCoordsData[0].lon)) / 2],
+                [startCoords[0] + (endCoords[0] - startCoords[0]) * 0.25, startCoords[1] + (endCoords[1] - startCoords[1]) * 0.25],
+                [startCoords[0] + (endCoords[0] - startCoords[0]) * 0.5, startCoords[1] + (endCoords[1] - startCoords[1]) * 0.5],
+                [startCoords[0] + (endCoords[0] - startCoords[0]) * 0.75, startCoords[1] + (endCoords[1] - startCoords[1]) * 0.75],
                 endCoords
             ];
             
-            routeLine = L.polyline(routePoints, {color: 'blue'}).addTo(map);
+            routeLine = L.polyline(routeCoordinates, {color: 'blue'}).addTo(map);
             
             // Fit map to route bounds
             map.fitBounds(routeLine.getBounds());
+            
+            // Show animation controls
+            animationControls.style.display = 'block';
         }
     } catch (e) {
         console.error('Error parsing coordinates:', e);
@@ -144,17 +154,22 @@ function displayRoute(routeData) {
         endMarker = L.marker(endCoords).addTo(map)
             .bindPopup(`<b>End: ${routeData.end}</b>`);
         
-        // Draw route line (mock for demo)
-        const routePoints = [
+        // Create route coordinates for animation
+        routeCoordinates = [
             startCoords,
-            [40.7530, -73.9832],
+            [40.7550, -73.9840],
+            [40.7520, -73.9835],
+            [40.7500, -73.9845],
             endCoords
         ];
         
-        routeLine = L.polyline(routePoints, {color: 'blue'}).addTo(map);
+        routeLine = L.polyline(routeCoordinates, {color: 'blue'}).addTo(map);
         
         // Fit map to route bounds
         map.fitBounds(routeLine.getBounds());
+        
+        // Show animation controls
+        animationControls.style.display = 'block';
     }
 }
 
@@ -197,6 +212,74 @@ function displayPOIs(poiData) {
     }
 }
 
+// Animate Bike Along Route
+function animateBike() {
+    if (!routeCoordinates || routeCoordinates.length === 0) {
+        showResult('No route available for animation', 'error');
+        return;
+    }
+    
+    // Disable button during animation
+    goButton.disabled = true;
+    goButton.textContent = 'Riding...';
+    
+    // Clear any existing animation
+    if (animationInterval) {
+        clearInterval(animationInterval);
+    }
+    
+    // Remove existing bike marker if present
+    if (bikeMarker) {
+        map.removeLayer(bikeMarker);
+    }
+    
+    // Create bike marker using emoji
+    bikeMarker = L.marker(routeCoordinates[0], {
+        icon: L.divIcon({
+            className: 'bike-icon',
+            html: '🚲',
+            iconSize: [24, 24]
+        })
+    }).addTo(map);
+    
+    let currentIndex = 0;
+    const totalPoints = routeCoordinates.length;
+    const stepsPerSegment = 20;
+    let currentSegment = 0;
+    let currentStep = 0;
+    
+    // Start animation
+    animationInterval = setInterval(() => {
+        if (currentSegment < totalPoints - 1) {
+            const start = routeCoordinates[currentSegment];
+            const end = routeCoordinates[currentSegment + 1];
+            
+            // Calculate position along current segment
+            const progress = currentStep / stepsPerSegment;
+            const lat = start[0] + (end[0] - start[0]) * progress;
+            const lng = start[1] + (end[1] - start[1]) * progress;
+            
+            // Update bike position
+            bikeMarker.setLatLng([lat, lng]);
+            
+            // Pan map to follow bike
+            map.panTo([lat, lng]);
+            
+            currentStep++;
+            
+            if (currentStep > stepsPerSegment) {
+                currentSegment++;
+                currentStep = 0;
+            }
+        } else {
+            // Animation complete
+            clearInterval(animationInterval);
+            goButton.disabled = false;
+            goButton.textContent = 'Go!';
+        }
+    }, 100);
+}
+
 // Helper Functions
 function showResult(content, type) {
     resultsDiv.innerHTML = content;
@@ -228,7 +311,23 @@ function clearMap() {
         map.removeLayer(routeLine);
         routeLine = null;
     }
+    if (bikeMarker) {
+        map.removeLayer(bikeMarker);
+        bikeMarker = null;
+    }
     clearPoiMarkers();
+    
+    // Hide animation controls
+    animationControls.style.display = 'none';
+    
+    // Clear animation interval
+    if (animationInterval) {
+        clearInterval(animationInterval);
+        animationInterval = null;
+    }
+    
+    // Reset route coordinates
+    routeCoordinates = [];
 }
 
 function clearPoiMarkers() {
