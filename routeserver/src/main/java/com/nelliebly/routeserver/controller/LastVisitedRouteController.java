@@ -29,7 +29,8 @@ public class LastVisitedRouteController {
 
 		// Mock implementation - in a real application this would retrieve from a database
 		if (userid == null || userid.isEmpty()) {
-			return ResponseEntity.badRequest().build();
+			// Return empty list when no user ID is provided
+			return ResponseEntity.ok(Arrays.asList());
 		}
 
 		// Return mock data for demonstration
