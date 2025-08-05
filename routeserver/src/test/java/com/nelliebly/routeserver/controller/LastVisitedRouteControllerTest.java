@@ -29,7 +29,7 @@ class LastVisitedRouteControllerTest {
 
 	@Test
 	void getLastRoutes_withoutUserId_shouldReturnBadRequest() throws Exception {
-		mockMvc.perform(get("/getLastRoutes")).andExpect(status().isOk());
+		mockMvc.perform(get("/getLastRoutes")).andExpect(status().isBadRequest());
 	}
 
 	@Test

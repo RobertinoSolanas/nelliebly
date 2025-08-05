@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,12 +24,12 @@ public class LastVisitedRouteController {
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Routes retrieved successfully"),
 			@ApiResponse(responseCode = "400", description = "Invalid user ID") })
 	@GetMapping("/getLastRoutes")
-	public List<Map<String, Object>> getLastRoutes(
-			@Parameter(description = "User identifier") @RequestParam String userid) {
+	public ResponseEntity<List<Map<String, Object>>> getLastRoutes(
+			@Parameter(description = "User identifier") @RequestParam(required = false) String userid) {
 
 		// Mock implementation - in a real application this would retrieve from a database
 		if (userid == null || userid.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User ID cannot be null or empty");
+			return ResponseEntity.badRequest().build();
 		}
 
 		// Return mock data for demonstration
@@ -46,7 +47,8 @@ public class LastVisitedRouteController {
 		route2.put("date", "2023-10-10T10:15:00Z");
 		route2.put("distance", "5.7 km");
 
-		return Arrays.asList(route1, route2);
+		List<Map<String, Object>> routes = Arrays.asList(route1, route2);
+		return ResponseEntity.ok(routes);
 	}
 
 }
