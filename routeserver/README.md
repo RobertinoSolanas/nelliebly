@@ -1,3 +1,14 @@
+# what to show:
+# 1) aider install / run
+# 2) aider commands
+# 3) programming
+# 3.1)aider new controller + test + arc42 + plantuml
+# 3.2) ->   /ask a new controller "ShowNewRoutes" with an rest  endpoint "getNewRoutes" for a given poi. create tests, update  00_buildingblocks.puml and update 05_building_
+# 3.3) aider /ask /code go ahead -> commit nur lokal -> push nach github
+# 3.3) aider /ls 
+
+
+
 # nelliebly 2
 # java spring 3.5
 # gradle
