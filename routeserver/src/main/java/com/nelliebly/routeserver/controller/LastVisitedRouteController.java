@@ -32,7 +32,7 @@ public class LastVisitedRouteController {
 			// Return empty list when no user ID is provided
 			return ResponseEntity.ok(Arrays.asList());
 		}
-		
+
 		if (userid.isEmpty()) {
 			// Return bad request when user ID is empty
 			return ResponseEntity.badRequest().build();

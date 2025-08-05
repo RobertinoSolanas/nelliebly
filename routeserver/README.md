@@ -12,7 +12,7 @@
 # 4) do junit test with aider
 # 5) show network issus -> cloudflare + ssl urls können nicht aufgelöst werden
 # 6) start bootrun with aider
-# 7) architecture hexagonal architecture
+# 7) architecture hexagonal architecuret
 # 8) free style
 
 

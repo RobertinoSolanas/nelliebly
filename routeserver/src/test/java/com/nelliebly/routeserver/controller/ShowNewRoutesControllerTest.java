@@ -16,19 +16,17 @@ class ShowNewRoutesControllerTest {
 
 	@Test
 	void getNewRoutes_withValidPoiId_shouldReturnRoutes() throws Exception {
-		mockMvc.perform(get("/getNewRoutes?poiId=1"))
-			.andExpect(status().isOk());
+		mockMvc.perform(get("/getNewRoutes?poiId=1")).andExpect(status().isOk());
 	}
 
 	@Test
 	void getNewRoutes_withoutPoiId_shouldReturnBadRequest() throws Exception {
-		mockMvc.perform(get("/getNewRoutes"))
-			.andExpect(status().isBadRequest());
+		mockMvc.perform(get("/getNewRoutes")).andExpect(status().isBadRequest());
 	}
 
 	@Test
 	void getNewRoutes_withEmptyPoiId_shouldReturnBadRequest() throws Exception {
-		mockMvc.perform(get("/getNewRoutes?poiId="))
-			.andExpect(status().isBadRequest());
+		mockMvc.perform(get("/getNewRoutes?poiId=")).andExpect(status().isBadRequest());
 	}
+
 }

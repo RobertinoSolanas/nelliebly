@@ -46,4 +46,5 @@ class CalculateRouteControllerTest {
 		mockMvc.perform(get("/calculateRoute?start=Times Square&end=Empire State Building&mock=false"))
 			.andExpect(status().isOk());
 	}
+
 }

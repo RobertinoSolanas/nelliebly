@@ -24,10 +24,12 @@ public class CalculateRouteController {
 	public ResponseEntity<Map<String, Object>> calculateRoute(
 			@Parameter(description = "Start location identifier") @RequestParam String start,
 			@Parameter(description = "End location identifier") @RequestParam String end,
-			@Parameter(description = "Use mock data if true, otherwise use real data") @RequestParam(defaultValue = "true") boolean mock) {
+			@Parameter(description = "Use mock data if true, otherwise use real data") @RequestParam(
+					defaultValue = "true") boolean mock) {
 
 		if (mock) {
-			// Mock implementation - in a real application this would calculate an actual route
+			// Mock implementation - in a real application this would calculate an actual
+			// route
 			Map<String, Object> response = new HashMap<>();
 			response.put("start", start);
 			response.put("end", end);
@@ -37,19 +39,20 @@ public class CalculateRouteController {
 			response.put("source", "mock");
 
 			return ResponseEntity.ok(response);
-		} else {
+		}
+		else {
 			// Real implementation using OpenStreetMap
 			try {
 				RestTemplate restTemplate = new RestTemplate();
-				
+
 				// Get coordinates for start location
 				String startUrl = "https://nominatim.openstreetmap.org/search?q=" + start + "&format=json&limit=1";
 				String startResponse = restTemplate.getForObject(startUrl, String.class);
-				
+
 				// Get coordinates for end location
 				String endUrl = "https://nominatim.openstreetmap.org/search?q=" + end + "&format=json&limit=1";
 				String endResponse = restTemplate.getForObject(endUrl, String.class);
-				
+
 				// In a real implementation, you would parse the responses,
 				// calculate the actual route, and return real data
 				Map<String, Object> response = new HashMap<>();
@@ -61,9 +64,10 @@ public class CalculateRouteController {
 				response.put("duration", "calculated duration");
 				response.put("route", new String[] { "Calculated Point 1", "Calculated Point 2" });
 				response.put("source", "openstreetmap");
-				
+
 				return ResponseEntity.ok(response);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				Map<String, Object> errorResponse = new HashMap<>();
 				errorResponse.put("error", "Failed to calculate route: " + e.getMessage());
 				return ResponseEntity.status(500).body(errorResponse);

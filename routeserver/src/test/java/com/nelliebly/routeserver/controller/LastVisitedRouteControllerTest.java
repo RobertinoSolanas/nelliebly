@@ -29,15 +29,12 @@ class LastVisitedRouteControllerTest {
 
 	@Test
 	void getLastRoutes_withoutUserId_shouldReturnEmptyList() throws Exception {
-		mockMvc.perform(get("/getLastRoutes"))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.length()").value(0));
+		mockMvc.perform(get("/getLastRoutes")).andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(0));
 	}
 
 	@Test
 	void getLastRoutes_withEmptyUserId_shouldReturnBadRequest() throws Exception {
-		mockMvc.perform(get("/getLastRoutes").param("userid", ""))
-			.andExpect(status().isBadRequest());
+		mockMvc.perform(get("/getLastRoutes").param("userid", "")).andExpect(status().isBadRequest());
 	}
 
 }
