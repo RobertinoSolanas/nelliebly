@@ -49,9 +49,10 @@ class PoiControllerTest {
 	}
 
 	@Test
-	void getPoi_withInvalidLimit_shouldStillWork() throws Exception {
-		mockMvc.perform(get("/getPoi?lat=40.7812&lon=-73.9665&limit=-1&mock=true"))
-				.andExpect(status().isOk());
+	void getPoi_withValidLimit_shouldReturnCorrectNumberOfResults() throws Exception {
+		mockMvc.perform(get("/getPoi?lat=40.7812&lon=-73.9665&limit=3&mock=true"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.length()").value(3));
 	}
 	
 	@Test
