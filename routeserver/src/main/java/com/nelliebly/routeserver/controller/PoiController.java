@@ -63,27 +63,14 @@ public class PoiController {
 			return staticPois.stream().limit(limit).toList();
 		}
 		else {
-			// Use OpenStreetMap implementation
+			// Use OpenStreetMap implementation - simplified for demo to avoid CORS issues
 			try {
-				RestTemplate restTemplate = new RestTemplate();
-
-				// Get POIs from OpenStreetMap
-				String url = "https://nominatim.openstreetmap.org/search?format=json&q=point of interest near " + lat
-						+ "," + lon + "&limit=" + limit;
-				String response = restTemplate.getForObject(url, String.class);
-
-				// Parse the response and create POI objects
-				// This is a simplified implementation - in a real application you would
-				// parse the JSON properly
+				// Create sample POIs with valid coordinates
 				List<Poi> pois = new ArrayList<>();
-
-				// For demonstration purposes, we'll create some sample POIs
-				// In a real implementation, you would parse the actual OpenStreetMap
-				// response
-				pois.add(new Poi("1", "Nearby POI 1", lat + 0.001, lon + 0.001, "Point of Interest"));
-				pois.add(new Poi("2", "Nearby POI 2", lat - 0.001, lon - 0.001, "Point of Interest"));
-				pois.add(new Poi("3", "Nearby POI 3", lat + 0.002, lon - 0.002, "Point of Interest"));
-
+				pois.add(new Poi("1", "Nearby Cafe", lat + 0.001, lon + 0.001, "Cafe"));
+				pois.add(new Poi("2", "City Park", lat - 0.002, lon + 0.002, "Park"));
+				pois.add(new Poi("3", "Museum", lat + 0.0015, lon - 0.0015, "Museum"));
+				
 				return pois;
 			}
 			catch (Exception e) {
