@@ -222,12 +222,12 @@ function displayPOIs(poiData) {
     
     if (Array.isArray(poiData) && poiData.length > 0) {
         poiData.forEach((poi, index) => {
-            // Validate coordinates before creating marker
-            if (poi.lat !== undefined && poi.lon !== undefined && 
-                !isNaN(parseFloat(poi.lat)) && !isNaN(parseFloat(poi.lon))) {
-                // Add marker to map
-                const marker = L.marker([parseFloat(poi.lat), parseFloat(poi.lon)]).addTo(map)
-                    .bindPopup(`<b>${poi.name}</b><br>Type: ${poi.type}`);
+            // Validate coordinates - using correct property names (latitude/longitude)
+            if (poi.latitude !== undefined && poi.longitude !== undefined && 
+                !isNaN(parseFloat(poi.latitude)) && !isNaN(parseFloat(poi.longitude))) {
+                // Add marker to map using correct property names
+                const marker = L.marker([parseFloat(poi.latitude), parseFloat(poi.longitude)]).addTo(map)
+                    .bindPopup(`<b>${poi.name}</b><br>Type: ${poi.category || poi.type || 'Unknown'}`);
                 
                 poiMarkers.push(marker);
                 
@@ -235,8 +235,8 @@ function displayPOIs(poiData) {
                 poiInfo += `
                     <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #3498db;">
                         <h4>${poi.name}</h4>
-                        <p>Type: ${poi.type}</p>
-                        <p>Coordinates: ${poi.lat}, ${poi.lon}</p>
+                        <p>Type: ${poi.category || poi.type || 'Unknown'}</p>
+                        <p>Coordinates: ${poi.latitude}, ${poi.longitude}</p>
                     </div>
                 `;
             } else {
@@ -245,7 +245,7 @@ function displayPOIs(poiData) {
                 poiInfo += `
                     <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #e74c3c;">
                         <h4>${poi.name}</h4>
-                        <p>Type: ${poi.type}</p>
+                        <p>Type: ${poi.category || poi.type || 'Unknown'}</p>
                         <p style="color: #e74c3c;">Invalid coordinates</p>
                     </div>
                 `;
@@ -272,15 +272,15 @@ function displayNearbyPOIs(poiData) {
     
     if (Array.isArray(poiData) && poiData.length > 0) {
         poiData.forEach((poi, index) => {
-            // Validate coordinates before creating marker
-            if (poi.lat !== undefined && poi.lon !== undefined && 
-                !isNaN(parseFloat(poi.lat)) && !isNaN(parseFloat(poi.lon))) {
+            // Validate coordinates - using correct property names (latitude/longitude)
+            if (poi.latitude !== undefined && poi.longitude !== undefined && 
+                !isNaN(parseFloat(poi.latitude)) && !isNaN(parseFloat(poi.longitude))) {
                 // Add to sidebar info
                 poiInfo += `
                     <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #3498db;">
                         <h4>${poi.name}</h4>
-                        <p>Type: ${poi.type}</p>
-                        <p>Coordinates: ${poi.lat}, ${poi.lon}</p>
+                        <p>Type: ${poi.category || poi.type || 'Unknown'}</p>
+                        <p>Coordinates: ${poi.latitude}, ${poi.longitude}</p>
                     </div>
                 `;
             } else {
@@ -289,7 +289,7 @@ function displayNearbyPOIs(poiData) {
                 poiInfo += `
                     <div style="margin-bottom: 10px; padding: 5px; border-left: 3px solid #e74c3c;">
                         <h4>${poi.name}</h4>
-                        <p>Type: ${poi.type}</p>
+                        <p>Type: ${poi.category || poi.type || 'Unknown'}</p>
                         <p style="color: #e74c3c;">Invalid coordinates</p>
                     </div>
                 `;
