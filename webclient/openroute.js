@@ -16,7 +16,6 @@ let routeLine = null;
 const routeForm = document.getElementById('routeForm');
 const poiForm = document.getElementById('poiForm');
 const resultsDiv = document.getElementById('results');
-const mockModeCheckbox = document.getElementById('mockMode');
 
 // Event Listeners
 routeForm.addEventListener('submit', calculateRoute);
@@ -28,7 +27,6 @@ function calculateRoute(e) {
     
     const start = document.getElementById('start').value;
     const end = document.getElementById('end').value;
-    const mock = mockModeCheckbox.checked;
     
     if (!start || !end) {
         showResult('Please enter both start and end locations', 'error');
@@ -41,8 +39,8 @@ function calculateRoute(e) {
     // Show loading
     showResult('Calculating route...', 'info');
     
-    // Call the routeserver API
-    fetch(`http://localhost:8090/calculateRoute?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&mock=${mock}`)
+    // Call the routeserver API with mock=false for real calculation
+    fetch(`http://localhost:8090/calculateRoute?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&mock=false`)
         .then(response => response.json())
         .then(data => {
             displayRoute(data);
@@ -104,28 +102,60 @@ function displayRoute(routeData) {
     routeInfo += `</div>`;
     showResult(routeInfo, 'success');
     
-    // Add markers for start and end (mock coordinates for demo)
-    const startCoords = [40.7580, -73.9855]; // Times Square
-    const endCoords = [40.7484, -73.9857]; // Empire State Building
-    
-    startMarker = L.marker(startCoords).addTo(map)
-        .bindPopup(`<b>Start: ${routeData.start}</b><br>Distance: ${routeData.distance}<br>Duration: ${routeData.duration}`)
-        .openPopup();
-    
-    endMarker = L.marker(endCoords).addTo(map)
-        .bindPopup(`<b>End: ${routeData.end}</b>`);
-    
-    // Draw route line (mock for demo)
-    const routePoints = [
-        startCoords,
-        [40.7530, -73.9832],
-        endCoords
-    ];
-    
-    routeLine = L.polyline(routePoints, {color: 'blue'}).addTo(map);
-    
-    // Fit map to route bounds
-    map.fitBounds(routeLine.getBounds());
+    // Parse coordinates from the response for map markers
+    try {
+        const startCoordsData = JSON.parse(routeData.startCoordinatesResponse);
+        const endCoordsData = JSON.parse(routeData.endCoordinatesResponse);
+        
+        if (startCoordsData.length > 0 && endCoordsData.length > 0) {
+            const startCoords = [parseFloat(startCoordsData[0].lat), parseFloat(startCoordsData[0].lon)];
+            const endCoords = [parseFloat(endCoordsData[0].lat), parseFloat(endCoordsData[0].lon)];
+            
+            startMarker = L.marker(startCoords).addTo(map)
+                .bindPopup(`<b>Start: ${routeData.start}</b><br>Distance: ${routeData.distance}<br>Duration: ${routeData.duration}`)
+                .openPopup();
+            
+            endMarker = L.marker(endCoords).addTo(map)
+                .bindPopup(`<b>End: ${routeData.end}</b>`);
+            
+            // Draw route line (mock for demo)
+            const routePoints = [
+                startCoords,
+                [parseFloat(startCoordsData[0].lat) + (parseFloat(endCoordsData[0].lat) - parseFloat(startCoordsData[0].lat)) / 2, 
+                 parseFloat(startCoordsData[0].lon) + (parseFloat(endCoordsData[0].lon) - parseFloat(startCoordsData[0].lon)) / 2],
+                endCoords
+            ];
+            
+            routeLine = L.polyline(routePoints, {color: 'blue'}).addTo(map);
+            
+            // Fit map to route bounds
+            map.fitBounds(routeLine.getBounds());
+        }
+    } catch (e) {
+        console.error('Error parsing coordinates:', e);
+        // Fallback to default coordinates if parsing fails
+        const startCoords = [40.7580, -73.9855]; // Times Square
+        const endCoords = [40.7484, -73.9857]; // Empire State Building
+        
+        startMarker = L.marker(startCoords).addTo(map)
+            .bindPopup(`<b>Start: ${routeData.start}</b><br>Distance: ${routeData.distance}<br>Duration: ${routeData.duration}`)
+            .openPopup();
+        
+        endMarker = L.marker(endCoords).addTo(map)
+            .bindPopup(`<b>End: ${routeData.end}</b>`);
+        
+        // Draw route line (mock for demo)
+        const routePoints = [
+            startCoords,
+            [40.7530, -73.9832],
+            endCoords
+        ];
+        
+        routeLine = L.polyline(routePoints, {color: 'blue'}).addTo(map);
+        
+        // Fit map to route bounds
+        map.fitBounds(routeLine.getBounds());
+    }
 }
 
 // Display POIs on Map
