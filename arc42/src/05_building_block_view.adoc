@@ -78,6 +78,7 @@ package "routeserver" {
     [PoiController] as poi
     [CalculateRouteController] as route
     [LastVisitedRouteController] as lastRoutes
+    [ShowNewRoutesController] as newRoutes
   }
   
   package "model" {
@@ -92,6 +93,7 @@ package "routeserver" {
   app --> poi : uses
   app --> route : uses
   app --> lastRoutes : uses
+  app --> newRoutes : uses
   poi --> poiModel : uses
   poi --> poiRepo : uses
   poiRepo --> poiModel : manages
@@ -120,6 +122,11 @@ end note
 note right of lastRoutes
   Retrieves last visited routes for users
   GET /getLastRoutes
+end note
+
+note right of newRoutes
+  Suggests new routes based on POI
+  GET /getNewRoutes
 end note
 
 note right of poiModel
@@ -151,6 +158,7 @@ The routeserver consists of the following main building blocks:
 | `PoiController` | Handles points of interest retrieval requests
 | `CalculateRouteController` | Handles route calculation requests between start and end points
 | `LastVisitedRouteController` | Handles requests for retrieving last visited routes for users
+| `ShowNewRoutesController` | Handles requests for suggesting new routes based on points of interest
 | `Poi` | Data model representing a point of interest
 | `PoiRepository` | Repository interface for POI data access using Spring Data JPA
 |===
@@ -161,6 +169,7 @@ The application exposes RESTful HTTP endpoints as its primary interface:
 - GET /getPoi - Points of interest endpoint with parameters for latitude, longitude, limit, and mock mode
 - GET /calculateRoute - Route calculation endpoint with parameters for start and end locations
 - GET /getLastRoutes - Last visited routes endpoint with parameter for user ID
+- GET /getNewRoutes - New routes suggestion endpoint with parameter for POI ID
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -360,6 +369,26 @@ Provides an endpoint for retrieving a user's recently visited routes.
 Open Issues/Problems/Risks::
 The current implementation returns mock data. A real implementation would need to integrate with a database to store and retrieve user route history.
 
+==== ShowNewRoutesController
+
+Purpose/Responsibility::
+Handles requests for suggesting new routes based on a given point of interest.
+
+Interface(s)::
+GET /getNewRoutes endpoint with parameter for POI ID.
+
+Quality/Performance Characteristics::
+Returns suggested route data in JSON format.
+
+Directory/File Location::
+`src/main/java/com/nelliebly/routeserver/controller/ShowNewRoutesController.java`
+
+Fulfilled Requirements::
+Provides an endpoint for suggesting new routes based on points of interest.
+
+Open Issues/Problems/Risks::
+The current implementation returns mock data. A real implementation would need to integrate with a recommendation engine or algorithm.
+
 ==== Poi
 
 Purpose/Responsibility::
@@ -459,6 +488,7 @@ _Internal Structure_:
 - PoiController.java: Points of interest endpoints
 - CalculateRouteController.java: Route calculation endpoints
 - LastVisitedRouteController.java: Last visited routes endpoints
+- ShowNewRoutesController.java: New routes suggestion endpoints
 
 _Design Principles_:
 - Each controller handles a specific functional area
@@ -525,3 +555,25 @@ _Data Processing_:
 - Currently no actual filtering by proximity (would be implemented in real version)
 - Limit parameter controls maximum results returned
 - Supports both static data and database access modes
+
+==== White Box _getNewRoutes method_
+
+The getNewRoutes method in ShowNewRoutesController handles the core logic for suggesting new routes based on a POI.
+
+_Method Signature_:
+public ResponseEntity<List<Map<String, Object>>> getNewRoutes(@RequestParam String poiId)
+
+_Logic Flow_:
+1. Receive HTTP GET request with POI ID parameter
+2. Validate that POI ID is provided and not empty
+3. If validation fails, return HTTP 400 Bad Request
+4. If validation passes, return mock route suggestions related to the POI
+
+_Error Handling_:
+- Returns HTTP 400 when POI ID is missing or empty
+- Database errors would propagate as HTTP 500 (not currently handled explicitly)
+
+_Data Processing_:
+- Currently returns static mock data
+- In a real implementation, would query for routes related to the specified POI
+- Routes include estimated distance and time to reach the POI
