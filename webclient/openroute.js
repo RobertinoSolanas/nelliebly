@@ -14,18 +14,29 @@ let routeLine = null;
 let bikeMarker = null;
 let animationInterval = null;
 let routeCoordinates = [];
+let isAnimating = false;
+let currentSegment = 0;
+let currentStep = 0;
+let stepsPerSegment = 20;
+let animationStartTime = null;
+let pausedAt = 0;
 
 // DOM Elements
 const routeForm = document.getElementById('routeForm');
 const poiForm = document.getElementById('poiForm');
 const resultsDiv = document.getElementById('results');
 const animationControls = document.getElementById('animationControls');
+const stopContinueButtons = document.getElementById('stopContinueButtons');
 const goButton = document.getElementById('goButton');
+const stopButton = document.getElementById('stopButton');
+const continueButton = document.getElementById('continueButton');
 
 // Event Listeners
 routeForm.addEventListener('submit', calculateRoute);
 poiForm.addEventListener('submit', searchPOIs);
-goButton.addEventListener('click', animateBike);
+goButton.addEventListener('click', startAnimation);
+stopButton.addEventListener('click', stopAnimation);
+continueButton.addEventListener('click', continueAnimation);
 
 // Calculate Route Function
 function calculateRoute(e) {
@@ -140,6 +151,7 @@ function displayRoute(routeData) {
             
             // Show animation controls
             animationControls.style.display = 'block';
+            stopContinueButtons.style.display = 'none';
         }
     } catch (e) {
         console.error('Error parsing coordinates:', e);
@@ -170,6 +182,7 @@ function displayRoute(routeData) {
         
         // Show animation controls
         animationControls.style.display = 'block';
+        stopContinueButtons.style.display = 'none';
     }
 }
 
@@ -212,16 +225,19 @@ function displayPOIs(poiData) {
     }
 }
 
-// Animate Bike Along Route
-function animateBike() {
+// Start Animation
+function startAnimation() {
     if (!routeCoordinates || routeCoordinates.length === 0) {
         showResult('No route available for animation', 'error');
         return;
     }
     
-    // Disable button during animation
+    // Disable go button during animation
     goButton.disabled = true;
     goButton.textContent = 'Riding...';
+    stopContinueButtons.style.display = 'block';
+    stopButton.style.display = 'inline-block';
+    continueButton.style.display = 'inline-block';
     
     // Clear any existing animation
     if (animationInterval) {
@@ -233,6 +249,13 @@ function animateBike() {
         map.removeLayer(bikeMarker);
     }
     
+    // Reset animation variables
+    currentSegment = 0;
+    currentStep = 0;
+    isAnimating = true;
+    animationStartTime = Date.now();
+    pausedAt = 0;
+    
     // Create bike marker using emoji
     bikeMarker = L.marker(routeCoordinates[0], {
         icon: L.divIcon({
@@ -242,15 +265,14 @@ function animateBike() {
         })
     }).addTo(map);
     
-    let currentIndex = 0;
-    const totalPoints = routeCoordinates.length;
-    const stepsPerSegment = 20;
-    let currentSegment = 0;
-    let currentStep = 0;
-    
     // Start animation
+    animateBike();
+}
+
+// Animate Bike Along Route
+function animateBike() {
     animationInterval = setInterval(() => {
-        if (currentSegment < totalPoints - 1) {
+        if (currentSegment < routeCoordinates.length - 1 && isAnimating) {
             const start = routeCoordinates[currentSegment];
             const end = routeCoordinates[currentSegment + 1];
             
@@ -271,13 +293,35 @@ function animateBike() {
                 currentSegment++;
                 currentStep = 0;
             }
-        } else {
+        } else if (currentSegment >= routeCoordinates.length - 1) {
             // Animation complete
             clearInterval(animationInterval);
             goButton.disabled = false;
             goButton.textContent = 'Go!';
+            stopContinueButtons.style.display = 'none';
+            isAnimating = false;
         }
     }, 100);
+}
+
+// Stop Animation
+function stopAnimation() {
+    isAnimating = false;
+    clearInterval(animationInterval);
+    pausedAt = Date.now() - animationStartTime;
+    stopButton.style.display = 'none';
+    continueButton.style.display = 'inline-block';
+}
+
+// Continue Animation
+function continueAnimation() {
+    if (!isAnimating) {
+        isAnimating = true;
+        animationStartTime = Date.now() - pausedAt;
+        stopButton.style.display = 'inline-block';
+        continueButton.style.display = 'inline-block';
+        animateBike();
+    }
 }
 
 // Helper Functions
@@ -326,8 +370,12 @@ function clearMap() {
         animationInterval = null;
     }
     
-    // Reset route coordinates
+    // Reset animation variables
+    isAnimating = false;
+    currentSegment = 0;
+    currentStep = 0;
     routeCoordinates = [];
+    pausedAt = 0;
 }
 
 function clearPoiMarkers() {

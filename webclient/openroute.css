@@ -90,7 +90,7 @@ header h1 {
     margin-right: 0.5rem;
 }
 
-.btn-primary, .btn-secondary, .btn-go {
+.btn-primary, .btn-secondary, .btn-go, .btn-stop, .btn-continue {
     width: 100%;
     padding: 0.8rem;
     border: none;
@@ -99,6 +99,7 @@ header h1 {
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s;
+    margin-bottom: 10px;
 }
 
 .btn-primary {
@@ -130,7 +131,25 @@ header h1 {
     background: #219653;
 }
 
-.btn-go:disabled {
+.btn-stop {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-stop:hover {
+    background: #c0392b;
+}
+
+.btn-continue {
+    background: #f39c12;
+    color: white;
+}
+
+.btn-continue:hover {
+    background: #d35400;
+}
+
+.btn-go:disabled, .btn-stop:disabled, .btn-continue:disabled {
     background: #bdc3c7;
     cursor: not-allowed;
 }
