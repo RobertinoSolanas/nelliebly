@@ -1,5 +1,6 @@
 package com.nelliebly.routeserver.controller;
 
+import com.nelliebly.routeserver.controller.CalculateRouteController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,7 +18,7 @@ class CalculateRouteControllerTest {
 
 	@Test
 	void calculateRoute_shouldReturnRouteInformation() throws Exception {
-		mockMvc.perform(get("/calculateRoute?start=New York&end=Boston"))
+		mockMvc.perform(get("/calculateRoute?start=New York&end=Boston&mock=true"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.start").value("New York"))
 			.andExpect(jsonPath("$.end").value("Boston"))
@@ -40,4 +41,9 @@ class CalculateRouteControllerTest {
 		mockMvc.perform(get("/calculateRoute?end=Boston")).andExpect(status().is4xxClientError());
 	}
 
+	@Test
+	void calculateRoute_withMockFalse_shouldCallOpenStreetMap() throws Exception {
+		mockMvc.perform(get("/calculateRoute?start=Times Square&end=Empire State Building&mock=false"))
+			.andExpect(status().isOk());
+	}
 }
