@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,18 +23,52 @@ public class CalculateRouteController {
 	@GetMapping("/calculateRoute")
 	public ResponseEntity<Map<String, Object>> calculateRoute(
 			@Parameter(description = "Start location identifier") @RequestParam String start,
-			@Parameter(description = "End location identifier") @RequestParam String end) {
+			@Parameter(description = "End location identifier") @RequestParam String end,
+			@Parameter(description = "Use mock data if true, otherwise use real data") @RequestParam(defaultValue = "true") boolean mock) {
 
-		// Mock implementation - in a real application this would calculate an actual
-		// route
-		Map<String, Object> response = new HashMap<>();
-		response.put("start", start);
-		response.put("end", end);
-		response.put("distance", "5.2 km");
-		response.put("duration", "15 minutes");
-		response.put("route", new String[] { "Point A", "Point B", "Point C", "Point D" });
+		if (mock) {
+			// Mock implementation - in a real application this would calculate an actual route
+			Map<String, Object> response = new HashMap<>();
+			response.put("start", start);
+			response.put("end", end);
+			response.put("distance", "5.2 km");
+			response.put("duration", "15 minutes");
+			response.put("route", new String[] { "Point A", "Point B", "Point C", "Point D" });
+			response.put("source", "mock");
 
-		return ResponseEntity.ok(response);
+			return ResponseEntity.ok(response);
+		} else {
+			// Real implementation using OpenStreetMap
+			try {
+				RestTemplate restTemplate = new RestTemplate();
+				
+				// Get coordinates for start location
+				String startUrl = "https://nominatim.openstreetmap.org/search?q=" + start + "&format=json&limit=1";
+				String startResponse = restTemplate.getForObject(startUrl, String.class);
+				
+				// Get coordinates for end location
+				String endUrl = "https://nominatim.openstreetmap.org/search?q=" + end + "&format=json&limit=1";
+				String endResponse = restTemplate.getForObject(endUrl, String.class);
+				
+				// In a real implementation, you would parse the responses,
+				// calculate the actual route, and return real data
+				Map<String, Object> response = new HashMap<>();
+				response.put("start", start);
+				response.put("end", end);
+				response.put("startCoordinatesResponse", startResponse);
+				response.put("endCoordinatesResponse", endResponse);
+				response.put("distance", "calculated distance");
+				response.put("duration", "calculated duration");
+				response.put("route", new String[] { "Calculated Point 1", "Calculated Point 2" });
+				response.put("source", "openstreetmap");
+				
+				return ResponseEntity.ok(response);
+			} catch (Exception e) {
+				Map<String, Object> errorResponse = new HashMap<>();
+				errorResponse.put("error", "Failed to calculate route: " + e.getMessage());
+				return ResponseEntity.status(500).body(errorResponse);
+			}
+		}
 	}
 
 }
