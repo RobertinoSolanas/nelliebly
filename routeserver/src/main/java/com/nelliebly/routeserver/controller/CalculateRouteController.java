@@ -239,7 +239,8 @@ public class CalculateRouteController {
 
 					List<String> routePoints = new ArrayList<>();
 					for (List<Double> coord : coordinates) {
-						routePoints.add(coord.get(1) + "," + coord.get(0)); // lat,lon format
+						routePoints.add(coord.get(1) + "," + coord.get(0)); // lat,lon
+																			// format
 					}
 
 					return new RouteResult(distance, duration, routePoints.toArray(new String[0]));
