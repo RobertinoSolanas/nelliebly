@@ -176,7 +176,7 @@ public class CalculateRouteController {
 			ResponseEntity<List> response = restTemplate.exchange(finalUrl, HttpMethod.GET, entity, List.class);
 
 			List<Map<String, Object>> results = response.getBody();
-			logger.debug("Nominatim API returned {} results", results.size());
+			logger.debug("Nominatim API returned {} results", results != null ? results.size() : 0);
 
 			if (results != null && !results.isEmpty()) {
 				// Parse the first result
@@ -222,26 +222,28 @@ public class CalculateRouteController {
 			logger.debug("OSRM API response received");
 
 			// Parse route information
-			List<Map<String, Object>> routesList = (List<Map<String, Object>>) result.get("routes");
-			if (routesList != null && !routesList.isEmpty()) {
-				// Get first route
-				Map<String, Object> firstRoute = routesList.get(0);
-				double distanceValue = (Double) firstRoute.get("distance");
-				double durationValue = (Double) firstRoute.get("duration");
+			if (result != null && result.containsKey("routes")) {
+				List<Map<String, Object>> routesList = (List<Map<String, Object>>) result.get("routes");
+				if (routesList != null && !routesList.isEmpty()) {
+					// Get first route
+					Map<String, Object> firstRoute = routesList.get(0);
+					double distanceValue = (Double) firstRoute.get("distance");
+					double durationValue = (Double) firstRoute.get("duration");
 
-				String distance = String.format("%.2f km", distanceValue / 1000);
-				String duration = formatDuration(durationValue);
+					String distance = String.format("%.2f km", distanceValue / 1000);
+					String duration = formatDuration(durationValue);
 
-				// Extract route geometry
-				Map<String, Object> geometry = (Map<String, Object>) firstRoute.get("geometry");
-				List<List<Double>> coordinates = (List<List<Double>>) geometry.get("coordinates");
+					// Extract route geometry
+					Map<String, Object> geometry = (Map<String, Object>) firstRoute.get("geometry");
+					List<List<Double>> coordinates = (List<List<Double>>) geometry.get("coordinates");
 
-				List<String> routePoints = new ArrayList<>();
-				for (List<Double> coord : coordinates) {
-					routePoints.add(coord.get(1) + "," + coord.get(0)); // lat,lon format
+					List<String> routePoints = new ArrayList<>();
+					for (List<Double> coord : coordinates) {
+						routePoints.add(coord.get(1) + "," + coord.get(0)); // lat,lon format
+					}
+
+					return new RouteResult(distance, duration, routePoints.toArray(new String[0]));
 				}
-
-				return new RouteResult(distance, duration, routePoints.toArray(new String[0]));
 			}
 
 			throw new Exception("No route found in OSRM response");
