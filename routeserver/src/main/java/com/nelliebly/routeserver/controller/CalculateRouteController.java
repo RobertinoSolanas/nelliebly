@@ -96,10 +96,10 @@ public class CalculateRouteController {
 
 				Map<String, Object> errorResponse = new HashMap<>();
 				errorResponse.put("error", "Failed to calculate route: " + e.getMessage());
-				
+
 				// Debug: Log error response
 				logger.error("Error response: {}", errorResponse);
-				
+
 				return ResponseEntity.status(500).body(errorResponse);
 			}
 		}
