@@ -146,6 +146,7 @@ public class CalculateRouteController {
 	/**
 	 * Geocodes an address using Nominatim
 	 */
+	@SuppressWarnings("unchecked")
 	private Coordinates geocode(String q) throws Exception {
 		logger.debug("Geocoding address: {}", q);
 
@@ -174,12 +175,12 @@ public class CalculateRouteController {
 			// Using exchange method to have full control over headers
 			ResponseEntity<List> response = restTemplate.exchange(finalUrl, HttpMethod.GET, entity, List.class);
 
-			List results = response.getBody();
+			List<Map<String, Object>> results = response.getBody();
 			logger.debug("Nominatim API returned {} results", results.size());
 
-			if (results.size() > 0) {
+			if (results != null && !results.isEmpty()) {
 				// Parse the first result
-				Map<String, Object> firstResult = (Map<String, Object>) results.get(0);
+				Map<String, Object> firstResult = results.get(0);
 				double lat = Double.parseDouble(firstResult.get("lat").toString());
 				double lon = Double.parseDouble(firstResult.get("lon").toString());
 				return new Coordinates(lat, lon);
@@ -197,6 +198,7 @@ public class CalculateRouteController {
 	/**
 	 * Fetches route using OSRM
 	 */
+	@SuppressWarnings("unchecked")
 	private RouteResult fetchRoute(Coordinates start, Coordinates end) throws Exception {
 		logger.debug("Fetching route from ({},{}) to ({},{})", start.lat, start.lon, end.lat, end.lon);
 
