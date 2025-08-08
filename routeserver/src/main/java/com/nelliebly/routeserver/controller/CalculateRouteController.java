@@ -227,8 +227,10 @@ public class CalculateRouteController {
 				if (routesList != null && !routesList.isEmpty()) {
 					// Get first route
 					Map<String, Object> firstRoute = routesList.get(0);
-					double distanceValue = (Double) firstRoute.get("distance");
-					double durationValue = (Double) firstRoute.get("duration");
+					
+					// Safely convert distance and duration to double
+					double distanceValue = convertToDouble(firstRoute.get("distance"));
+					double durationValue = convertToDouble(firstRoute.get("duration"));
 
 					String distance = String.format("%.2f km", distanceValue / 1000);
 					String duration = formatDuration(durationValue);
@@ -251,6 +253,21 @@ public class CalculateRouteController {
 		catch (HttpClientErrorException e) {
 			logger.error("HTTP error from OSRM: {}", e.getMessage());
 			throw new Exception("OSRM API error: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Safely convert an object to double, handling both Integer and Double types
+	 */
+	private double convertToDouble(Object value) {
+		if (value instanceof Double) {
+			return (Double) value;
+		} else if (value instanceof Integer) {
+			return ((Integer) value).doubleValue();
+		} else if (value instanceof Number) {
+			return ((Number) value).doubleValue();
+		} else {
+			return Double.parseDouble(value.toString());
 		}
 	}
 
