@@ -147,34 +147,30 @@ function displayRoute(routeData) {
     
     // Parse coordinates from the response for map markers
     try {
-        const startCoordsData = JSON.parse(routeData.startCoordinatesResponse);
-        const endCoordsData = JSON.parse(routeData.endCoordinatesResponse);
-        
-        if (startCoordsData.length > 0 && endCoordsData.length > 0) {
-            const startCoords = [parseFloat(startCoordsData[0].lat), parseFloat(startCoordsData[0].lon)];
-            const endCoords = [parseFloat(endCoordsData[0].lat), parseFloat(endCoordsData[0].lon)];
-            
+        if (routeData.route && Array.isArray(routeData.route) && routeData.route.length > 1) {
+            const parsedCoords = routeData.route.map(point => {
+                const [lat, lon] = point.split(",").map(Number);
+                return [lat, lon];
+            });
+
+            const startCoords = parsedCoords[0];
+            const endCoords = parsedCoords[parsedCoords.length - 1];
+
             startMarker = L.marker(startCoords).addTo(map)
                 .bindPopup(`<b>Start: ${routeData.start}</b><br>Distance: ${routeData.distance}<br>Duration: ${routeData.duration}`)
                 .openPopup();
-            
+
             endMarker = L.marker(endCoords).addTo(map)
                 .bindPopup(`<b>End: ${routeData.end}</b>`);
-            
-            // Create route coordinates for animation
-            routeCoordinates = [
-                startCoords,
-                [startCoords[0] + (endCoords[0] - startCoords[0]) * 0.25, startCoords[1] + (endCoords[1] - startCoords[1]) * 0.25],
-                [startCoords[0] + (endCoords[0] - startCoords[0]) * 0.5, startCoords[1] + (endCoords[1] - startCoords[1]) * 0.5],
-                [startCoords[0] + (endCoords[0] - startCoords[0]) * 0.75, startCoords[1] + (endCoords[1] - startCoords[1]) * 0.75],
-                endCoords
-            ];
-            
-            routeLine = L.polyline(routeCoordinates, {color: 'blue'}).addTo(map);
-            
+
+            // Use the parsed route coordinates directly
+            routeCoordinates = parsedCoords;
+
+            routeLine = L.polyline(routeCoordinates, { color: 'blue' }).addTo(map);
+
             // Fit map to route bounds
             map.fitBounds(routeLine.getBounds());
-            
+
             // Show animation controls
             animationControls.style.display = 'block';
             stopContinueButtons.style.display = 'none';
