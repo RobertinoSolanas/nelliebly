@@ -62,7 +62,12 @@
 #  /ask a new controller "LastVisitedRouteController" with an rest  endpoint "getLastRoutes" for a given userid. create tests, update  00_buildingblocks.puml 05_building_
 > block_view.adoc  
 
-# /test gradle -p routeserver test 
+# /test ./gradlew -p routeserver test 
+
+# how to run locally
+# ./gradlew -p routeserver clean build
+# ./gradlew -p routeserver bootRun
+# ./gradlew -p routeserver test
 
 #  network
 # watch -n 1 "sudo ss -ntup | grep 'pid=8346'"
