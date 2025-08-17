@@ -227,7 +227,7 @@ public class CalculateRouteController {
 				if (routesList != null && !routesList.isEmpty()) {
 					// Get first route
 					Map<String, Object> firstRoute = routesList.get(0);
-					
+
 					// Safely convert distance and duration to double
 					double distanceValue = convertToDouble(firstRoute.get("distance"));
 					double durationValue = convertToDouble(firstRoute.get("duration"));
@@ -241,7 +241,8 @@ public class CalculateRouteController {
 
 					List<String> routePoints = new ArrayList<>();
 					for (List<Double> coord : coordinates) {
-						routePoints.add(coord.get(1) + "," + coord.get(0)); // lat,lon format
+						routePoints.add(coord.get(1) + "," + coord.get(0)); // lat,lon
+																			// format
 					}
 
 					return new RouteResult(distance, duration, routePoints.toArray(new String[0]));
@@ -262,11 +263,14 @@ public class CalculateRouteController {
 	private double convertToDouble(Object value) {
 		if (value instanceof Double) {
 			return (Double) value;
-		} else if (value instanceof Integer) {
+		}
+		else if (value instanceof Integer) {
 			return ((Integer) value).doubleValue();
-		} else if (value instanceof Number) {
+		}
+		else if (value instanceof Number) {
 			return ((Number) value).doubleValue();
-		} else {
+		}
+		else {
 			return Double.parseDouble(value.toString());
 		}
 	}

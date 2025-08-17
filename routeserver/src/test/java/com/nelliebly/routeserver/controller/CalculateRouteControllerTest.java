@@ -43,8 +43,7 @@ class CalculateRouteControllerTest {
 
 	@Test
 	void calculateRoute_withMockFalse_shouldCallOpenStreetMap() throws Exception {
-		mockMvc.perform(get("/calculateRoute?start=Times Square&end=Empire State Building&mock=false"))
-			.andExpect(status().isOk());
+		mockMvc.perform(get("/calculateRoute?start=Hamburg&end=Kiel&mock=false")).andExpect(status().isOk());
 	}
 
 }
